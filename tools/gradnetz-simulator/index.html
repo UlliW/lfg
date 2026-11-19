@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Gradnetz der Erde – Simulation V4</title>
+  <style>
+    :root{
+      --bg:#f5f7fb; --card:#ffffff; --line:#cad5e3; --text:#16324f; --muted:#56708a;
+      --accent:#1d6fd8; --accent-soft:#eef5ff; --accent-2:#ef6c00; --sea:#dff0fb;
+      --ok:#197d46; --warn:#b85a00; --bad:#b3261e; --eq:#c62828; --pm:#6a1b9a;
+      --grid-lat:rgba(29,111,216,.38); --grid-lon:rgba(239,108,0,.38);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      background:var(--bg); color:var(--text);
+    }
+    .app{
+      max-width:1280px; margin:0 auto; padding:16px;
+      display:grid; grid-template-columns:1.6fr 1fr; gap:16px;
+    }
+    .card{
+      background:var(--card); border:1px solid var(--line); border-radius:18px;
+      box-shadow:0 8px 24px rgba(22,50,79,.06);
+    }
+    .map-card{padding:14px}
+    .panel{padding:16px; display:grid; gap:14px; align-content:start}
+    h1{margin:0 0 4px; font-size:1.65rem}
+    h2{margin:0; font-size:1.05rem}
+    p{line-height:1.35}
+    .subtle{margin:0; color:var(--muted)}
+    .pill{
+      display:inline-block; border-radius:999px; padding:6px 10px; font-size:.88rem;
+      background:#eef5ff; color:#114a94; border:1px solid #cfe0fb; font-weight:700;
+    }
+    .levelbar{
+      display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin-top:12px;
+    }
+    button, select, input{
+      font:inherit; border-radius:12px; border:1px solid var(--line);
+      padding:12px 14px; min-height:48px; background:#fff; color:var(--text);
+    }
+    button{cursor:pointer; font-weight:700}
+    button.primary{background:var(--accent); color:#fff; border-color:var(--accent)}
+    button.secondary{background:var(--accent-soft); border-color:#bdd7ff}
+    button.active{
+      background:var(--accent); color:#fff; border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(29,111,216,.16);
+    }
+    button:disabled{opacity:.55; cursor:not-allowed}
+    .map-wrap{
+      width:100%; aspect-ratio:2/1; border-radius:14px; overflow:hidden; border:1px solid var(--line);
+      background:var(--sea); position:relative; touch-action:none; margin-top:12px;
+    }
+    .map-wrap img,.map-wrap canvas{
+      position:absolute; inset:0; width:100%; height:100%; display:block;
+    }
+    .map-wrap img{
+      object-fit:fill; user-select:none; -webkit-user-drag:none; pointer-events:none;
+    }
+    .toolbar,.grid2,.grid3{display:grid; gap:10px}
+    .toolbar{grid-template-columns:repeat(3,minmax(0,1fr)); margin-top:12px}
+    .grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .task-box,.feedback,.legend,.glossary,.progress-box{
+      padding:12px; border-radius:14px; border:1px solid var(--line); background:#fbfdff;
+    }
+    .feedback.ok{border-color:#a6d7bb; background:#f1fbf5; color:var(--ok)}
+    .feedback.warn{border-color:#ffd59e; background:#fff8ef; color:var(--warn)}
+    .feedback.bad{border-color:#f0b5b0; background:#fff3f2; color:var(--bad)}
+    .toggle{
+      display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--line);
+      border-radius:12px; background:#fff;
+    }
+    .toggle input{min-height:unset; width:20px; height:20px; margin:0}
+    .coord-group{display:grid; grid-template-columns:1fr 140px; gap:8px}
+    .small{font-size:.92rem; color:var(--muted); margin:0}
+    .legend-row{display:flex; align-items:center; gap:8px; margin:6px 0; font-size:.95rem}
+    .swatch{width:20px; height:4px; border-radius:999px; flex:0 0 auto}
+    .hidden{display:none !important}
+    .progress{
+      width:100%; height:12px; border-radius:999px; background:#e9eef5; overflow:hidden; margin-top:8px;
+      border:1px solid #dbe4ef;
+    }
+    .progress > div{height:100%; background:var(--accent); width:0%}
+    .challenge-score{
+      font-weight:700; color:#114a94; margin-top:6px;
+    }
+    @media (max-width: 980px){
+      .app{grid-template-columns:1fr}
+      .levelbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="card map-card">
+      <h1>Gradnetz der Erde</h1>
+      <p class="subtle">Version 4: Weltkarte, Levelsystem, Aufgabenfolgen und Challenge.</p>
+
+      <div class="levelbar">
+        <button class="level-btn" data-level="1">Level 1</button>
+        <button class="level-btn" data-level="2">Level 2</button>
+        <button class="level-btn" data-level="3">Level 3</button>
+        <button class="level-btn" data-level="4">Level 4</button>
+        <button class="level-btn" data-level="5">Challenge ⭐</button>
+      </div>
+
+      <div class="map-wrap" id="mapWrap">
+        <img id="worldMap" alt="Weltkarte" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/BlankMap-World-Equirectangular.svg/3840px-BlankMap-World-Equirectangular.svg.png">
+        <canvas id="overlayCanvas" aria-label="Gradnetz auf Weltkarte"></canvas>
+      </div>
+
+      <div class="toolbar">
+        <button id="checkBtn" class="primary">Prüfen</button>
+        <button id="nextBtn" class="secondary">Neue Aufgabe</button>
+        <button id="resetBtn">Zurücksetzen</button>
+      </div>
+    </section>
+
+    <aside class="card panel">
+      <div><span class="pill">V4</span></div>
+
+      <div class="progress-box">
+        <h2 id="levelTitle">Noch kein Level gewählt</h2>
+        <p id="progressText" class="small" style="margin-top:8px;">Wähle oben ein Level.</p>
+        <div class="progress"><div id="progressBar"></div></div>
+        <div id="challengeScore" class="challenge-score hidden"></div>
+      </div>
+
+      <div class="task-box">
+        <h2>Aufgabe</h2>
+        <p id="taskText" style="margin:8px 0 0 0;">Wähle oben ein Level.</p>
+      </div>
+
+      <div class="grid3">
+        <label class="toggle"><input type="checkbox" id="showLat" checked> Breitenkreise</label>
+        <label class="toggle"><input type="checkbox" id="showLon" checked> Längenkreise</label>
+        <label class="toggle"><input type="checkbox" id="showLabels" checked> Beschriftung</label>
+      </div>
+
+      <div id="inputArea" class="grid2 hidden">
+        <div>
+          <h2>Breite</h2>
+          <div class="coord-group" style="margin-top:8px;">
+            <input type="number" id="latValue" min="0" max="90" step="1" placeholder="z. B. 30">
+            <select id="latDir">
+              <option value="N">nördlich</option>
+              <option value="S">südlich</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <h2>Länge</h2>
+          <div class="coord-group" style="margin-top:8px;">
+            <input type="number" id="lonValue" min="0" max="180" step="1" placeholder="z. B. 60">
+            <select id="lonDir">
+              <option value="E">östlich</option>
+              <option value="W">westlich</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedbackBox">Starte mit einem Level.</div>
+
+      <div class="legend">
+        <h2>Merkhilfe</h2>
+        <div class="legend-row"><span class="swatch" style="background:#1d6fd8"></span> Breitenkreise verlaufen waagerecht.</div>
+        <div class="legend-row"><span class="swatch" style="background:#ef6c00"></span> Längenkreise verlaufen senkrecht von Pol zu Pol.</div>
+        <div class="legend-row"><span class="swatch" style="background:#c62828"></span> Äquator = 0° Breite</div>
+        <div class="legend-row"><span class="swatch" style="background:#6a1b9a"></span> Nullmeridian = 0° Länge</div>
+      </div>
+
+      <div class="glossary">
+        <h2>So geht's</h2>
+        <p class="small" style="margin-top:8px;">
+          In den Levels 1, 3 und 4 tippst du auf die Karte.<br>
+          In Level 2 liest du die Koordinaten ab und gibst sie ein.<br>
+          In der Challenge bekommst du 10 gemischte Aufgaben.
+        </p>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('overlayCanvas');
+    const ctx = canvas.getContext('2d');
+    const wrap = document.getElementById('mapWrap');
+
+    const els = {
+      levelBtns: [...document.querySelectorAll('.level-btn')],
+      levelTitle: document.getElementById('levelTitle'),
+      progressText: document.getElementById('progressText'),
+      progressBar: document.getElementById('progressBar'),
+      challengeScore: document.getElementById('challengeScore'),
+      taskText: document.getElementById('taskText'),
+      feedbackBox: document.getElementById('feedbackBox'),
+      checkBtn: document.getElementById('checkBtn'),
+      nextBtn: document.getElementById('nextBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      inputArea: document.getElementById('inputArea'),
+      showLat: document.getElementById('showLat'),
+      showLon: document.getElementById('showLon'),
+      showLabels: document.getElementById('showLabels'),
+      latValue: document.getElementById('latValue'),
+      latDir: document.getElementById('latDir'),
+      lonValue: document.getElementById('lonValue'),
+      lonDir: document.getElementById('lonDir')
+    };
+
+    const state = {
+      level: 0,
+      tasks: [],
+      index: 0,
+      score: 0,
+      gridStep: 15,
+      studentMarker: null,
+      referenceMarker: null,
+      taskLocked: false,
+      justCompletedLevel: false
+    };
+
+    const LEVEL_TITLES = {
+      1: 'Level 1 – Orientierung',
+      2: 'Level 2 – Koordinaten lesen',
+      3: 'Level 3 – Koordinaten finden',
+      4: 'Level 4 – Transfer',
+      5: 'Challenge ⭐'
+    };
+
+    function mapWidth(){ return wrap.clientWidth; }
+    function mapHeight(){ return wrap.clientHeight; }
+    function lonToX(lon){ return ((lon + 180) / 360) * mapWidth(); }
+    function latToY(lat){ return ((90 - lat) / 180) * mapHeight(); }
+    function xToLon(x){ return (x / mapWidth()) * 360 - 180; }
+    function yToLat(y){ return 90 - (y / mapHeight()) * 180; }
+    function roundToGrid(v){ return Math.round(v / state.gridStep) * state.gridStep; }
+
+    function shortLat(lat){ return `${Math.abs(lat)}°`; }
+    function shortLon(lon){ return `${Math.abs(lon)}°`; }
+
+    function formatLat(lat){
+      if(lat === 0) return '0° Breite';
+      return `${Math.abs(lat)}° ${lat > 0 ? 'nördlicher Breite' : 'südlicher Breite'}`;
+    }
+    function formatLon(lon){
+      if(lon === 0) return '0° Länge';
+      return `${Math.abs(lon)}° ${lon > 0 ? 'östlicher Länge' : 'westlicher Länge'}`;
+    }
+
+    function setFeedback(text, kind=''){
+      els.feedbackBox.textContent = text;
+      els.feedbackBox.className = 'feedback' + (kind ? ' ' + kind : '');
+    }
+
+    function resizeCanvas(){
+      const ratio = window.devicePixelRatio || 1;
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+      canvas.width = Math.round(w * ratio);
+      canvas.height = Math.round(h * ratio);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(ratio,0,0,ratio,0,0);
+      draw();
+    }
+
+    function drawGrid(){
+      const w = mapWidth();
+      const h = mapHeight();
+      ctx.save();
+      ctx.font = '12px system-ui';
+      ctx.lineWidth = 1;
+
+      if(els.showLat.checked){
+        for(let lat = -75; lat <= 75; lat += state.gridStep){
+          const y = latToY(lat);
+          ctx.beginPath();
+          ctx.strokeStyle = lat === 0 ? '#c62828' : getComputedStyle(document.documentElement).getPropertyValue('--grid-lat');
+          ctx.lineWidth = lat === 0 ? 2.5 : 1;
+          ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke();
+
+          if(els.showLabels.checked && lat !== 0){
+            ctx.fillStyle = '#134f9b';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(shortLat(lat), 6, y - 10);
+            ctx.textAlign = 'right';
+            ctx.fillText(shortLat(lat), w - 6, y - 10);
+          }
+        }
+      }
+
+      if(els.showLon.checked){
+        for(let lon = -180; lon <= 180; lon += state.gridStep){
+          const x = lonToX(lon);
+          ctx.beginPath();
+          ctx.strokeStyle = lon === 0 ? '#6a1b9a' : getComputedStyle(document.documentElement).getPropertyValue('--grid-lon');
+          ctx.lineWidth = lon === 0 ? 2.5 : 1;
+          ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+
+          if(els.showLabels.checked && lon !== -180 && lon !== 180){
+            ctx.fillStyle = '#a04b00';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(shortLon(lon), x, 4);
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(shortLon(lon), x, h - 4);
+          }
+        }
+      }
+      ctx.restore();
+    }
+
+    function drawMarker(x, y, color='#0b5ed7'){
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(x - 9, y); ctx.lineTo(x + 9, y);
+      ctx.moveTo(x, y - 9); ctx.lineTo(x, y + 9);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function draw(){
+      const w = mapWidth();
+      const h = mapHeight();
+      ctx.clearRect(0,0,w,h);
+      drawGrid();
+
+      const task = state.tasks[state.index];
+      if(task && (task.type === 'readCoord' || task.type === 'challengeRead' || task.type === 'compare') && task.reference){
+        drawMarker(lonToX(task.reference.lon), latToY(task.reference.lat), '#6a1b9a');
+      }
+      if(state.studentMarker){
+        drawMarker(state.studentMarker.x, state.studentMarker.y, '#0b5ed7');
+      }
+    }
+
+    function chooseRandom(arr, count){
+      const copy = [...arr];
+      const out = [];
+      while(copy.length && out.length < count){
+        const i = Math.floor(Math.random() * copy.length);
+        out.push(copy.splice(i,1)[0]);
+      }
+      return out;
+    }
+
+    function buildLevelTasks(level){
+      if(level === 1){
+        return [
+          { type:'equator' },
+          { type:'primeMeridian' },
+          { type:'northOfEquator' },
+          { type:'westOfPrimeMeridian' },
+          { type:'coord', lat:30, lon:30 }
+        ];
+      }
+
+      if(level === 2){
+        return [
+          { type:'readCoord', reference:{ lat:0, lon:30 } },
+          { type:'readCoord', reference:{ lat:30, lon:0 } },
+          { type:'readCoord', reference:{ lat:-30, lon:60 } },
+          { type:'readCoord', reference:{ lat:60, lon:-30 } },
+          { type:'readCoord', reference:{ lat:-30, lon:-60 } }
+        ];
+      }
+
+      if(level === 3){
+        const pool = [
+          { type:'coord', lat:0, lon:60 },
+          { type:'coord', lat:30, lon:0 },
+          { type:'coord', lat:-30, lon:60 },
+          { type:'coord', lat:60, lon:-30 },
+          { type:'coord', lat:-60, lon:0 },
+          { type:'coord', lat:0, lon:-60 },
+          { type:'coord', lat:30, lon:30 },
+          { type:'coord', lat:-30, lon:-60 },
+          { type:'coord', lat:60, lon:60 },
+          { type:'coord', lat:-60, lon:30 }
+        ];
+        return chooseRandom(pool, 5);
+      }
+
+      if(level === 4){
+        return [
+          { type:'coord', lat:45, lon:-30 },
+          { type:'latOnly', lat:-15 },
+          { type:'condition', latCondition:'north', lonCondition:'west' },
+          { type:'coord', lat:-30, lon:45 },
+          { type:'compare', reference:{ lat:15, lon:30 }, compare:'northOfReference' }
+        ];
+      }
+
+      if(level === 5){
+        const pool = [
+          { type:'challengeRead', reference:{ lat:15, lon:75 } },
+          { type:'challengeCoord', lat:45, lon:15 },
+          { type:'challengeCondition', latCondition:'south', lonCondition:'east' },
+          { type:'challengeRead', reference:{ lat:-45, lon:105 } },
+          { type:'challengeCoord', lat:75, lon:-45 },
+          { type:'challengeLatOnly', lat:45 },
+          { type:'challengeCoord', lat:-15, lon:-105 },
+          { type:'challengeRead', reference:{ lat:45, lon:-135 } },
+          { type:'challengeCondition', latCondition:'north', lonCondition:'east' },
+          { type:'challengeCoord', lat:-75, lon:45 }
+        ];
+        return chooseRandom(pool, 10);
+      }
+
+      return [];
+    }
+
+    function updateLevelButtons(){
+      els.levelBtns.forEach(btn => {
+        btn.classList.toggle('active', Number(btn.dataset.level) === state.level);
+      });
+    }
+
+    function updateProgress(){
+      if(!state.level){
+        els.levelTitle.textContent = 'Noch kein Level gewählt';
+        els.progressText.textContent = 'Wähle oben ein Level.';
+        els.progressBar.style.width = '0%';
+        els.challengeScore.classList.add('hidden');
+        return;
+      }
+      els.levelTitle.textContent = LEVEL_TITLES[state.level];
+      const total = state.tasks.length || 1;
+      const shownStep = Math.min(state.index + 1, total);
+      if(state.index >= total){
+        els.progressText.textContent = state.level === 5
+          ? `Challenge beendet: ${state.score} von ${total} Punkten`
+          : `Geschafft: ${total} von ${total} Aufgaben`;
+        els.progressBar.style.width = '100%';
+      } else {
+        els.progressText.textContent = `Aufgabe ${shownStep} von ${total}`;
+        els.progressBar.style.width = `${(state.index / total) * 100}%`;
+      }
+      if(state.level === 5){
+        els.challengeScore.classList.remove('hidden');
+        els.challengeScore.textContent = `Punkte: ${state.score}`;
+      } else {
+        els.challengeScore.classList.add('hidden');
+      }
+    }
+
+    function clearInputs(){
+      els.latValue.value = '';
+      els.lonValue.value = '';
+      els.latDir.value = 'N';
+      els.lonDir.value = 'E';
+    }
+
+    function taskNeedsInput(task){
+      return task && (task.type === 'readCoord' || task.type === 'challengeRead');
+    }
+
+    function renderTask(){
+      updateProgress();
+      const task = state.tasks[state.index];
+      state.studentMarker = null;
+      clearInputs();
+      state.taskLocked = false;
+
+      if(!task){
+        els.inputArea.classList.add('hidden');
+        els.checkBtn.disabled = true;
+        els.nextBtn.disabled = true;
+        if(state.level === 5){
+          const total = state.tasks.length;
+          let stars = '';
+          if(state.score >= 9) stars = '⭐⭐⭐';
+          else if(state.score >= 7) stars = '⭐⭐';
+          else if(state.score >= 5) stars = '⭐';
+          setFeedback(`Challenge geschafft! Du hast ${state.score} von ${total} Punkten erreicht. ${stars}`, 'ok');
+        } else {
+          setFeedback(`Level ${state.level} geschafft!`, 'ok');
+        }
+        draw();
+        return;
+      }
+
+      els.checkBtn.disabled = false;
+      els.nextBtn.disabled = state.level !== 5;
+      els.inputArea.classList.toggle('hidden', !taskNeedsInput(task));
+
+      if(task.type === 'equator'){
+        els.taskText.textContent = 'Tippe auf den Äquator.';
+        setFeedback('Tipp: Der Äquator ist die waagerechte Linie in der Mitte.', '');
+      } else if(task.type === 'primeMeridian'){
+        els.taskText.textContent = 'Tippe auf den Nullmeridian.';
+        setFeedback('Tipp: Der Nullmeridian ist die senkrechte Linie bei 0° Länge.', '');
+      } else if(task.type === 'northOfEquator'){
+        els.taskText.textContent = 'Tippe auf einen Punkt nördlich des Äquators.';
+        setFeedback('Jeder Punkt oberhalb des Äquators ist richtig.', '');
+      } else if(task.type === 'westOfPrimeMeridian'){
+        els.taskText.textContent = 'Tippe auf einen Punkt westlich des Nullmeridians.';
+        setFeedback('Jeder Punkt links vom Nullmeridian ist richtig.', '');
+      } else if(task.type === 'coord' || task.type === 'challengeCoord'){
+        els.taskText.textContent = `Setze einen Punkt auf ${formatLat(task.lat)} und ${formatLon(task.lon)}.`;
+        setFeedback('Tippe die passende Stelle auf der Karte an und drücke dann „Prüfen“.', '');
+      } else if(task.type === 'latOnly' || task.type === 'challengeLatOnly'){
+        els.taskText.textContent = `Setze einen Punkt auf ${formatLat(task.lat)}.`;
+        setFeedback('Die Länge ist frei wählbar. Wichtig ist nur die richtige Breite.', '');
+      } else if(task.type === 'condition' || task.type === 'challengeCondition'){
+        els.taskText.textContent = `Setze einen Punkt ${task.latCondition === 'north' ? 'nördlich des Äquators' : 'südlich des Äquators'} und ${task.lonCondition === 'east' ? 'östlich des Nullmeridians' : 'westlich des Nullmeridians'}.`;
+        setFeedback('Achte nur auf die richtige Lage. Die genauen Zahlen sind hier nicht wichtig.', '');
+      } else if(task.type === 'compare'){
+        els.taskText.textContent = 'Setze einen Punkt, der weiter nördlich liegt als der markierte Punkt.';
+        setFeedback('Der violette Punkt ist der Vergleichspunkt.', '');
+      } else if(task.type === 'readCoord' || task.type === 'challengeRead'){
+        els.taskText.textContent = 'Lies die Koordinaten des markierten violetten Punkts ab.';
+        setFeedback('Gib zuerst die Breite, dann die Länge ein.', '');
+      }
+
+      draw();
+    }
+
+    function startLevel(level){
+      state.level = level;
+      state.tasks = buildLevelTasks(level);
+      state.index = 0;
+      state.score = 0;
+      updateLevelButtons();
+      renderTask();
+    }
+
+    function getEventPos(evt){
+      const rect = wrap.getBoundingClientRect();
+      const point = evt.touches ? evt.touches[0] : evt;
+      const x = point.clientX - rect.left;
+      const y = point.clientY - rect.top;
+      return {
+        x: Math.max(0, Math.min(rect.width, x)),
+        y: Math.max(0, Math.min(rect.height, y))
+      };
+    }
+
+    function handleMapTap(evt){
+      const task = state.tasks[state.index];
+      if(!task || taskNeedsInput(task)) return;
+      evt.preventDefault();
+      const pos = getEventPos(evt);
+      state.studentMarker = { x: pos.x, y: pos.y };
+      draw();
+    }
+
+    function getRoundedGuess(){
+      if(!state.studentMarker) return null;
+      return {
+        lat: roundToGrid(yToLat(state.studentMarker.y)),
+        lon: roundToGrid(xToLon(state.studentMarker.x))
+      };
+    }
+
+    function getDirectionalHint(dLat, dLon){
+      const hints = [];
+      if(dLat < 0) hints.push('zu weit südlich');
+      if(dLat > 0) hints.push('zu weit nördlich');
+      if(dLon < 0) hints.push('zu weit westlich');
+      if(dLon > 0) hints.push('zu weit östlich');
+      return hints.join(' und ');
+    }
+
+    function evaluateReadTask(task){
+      const latNum = Number(els.latValue.value);
+      const lonNum = Number(els.lonValue.value);
+      if(Number.isNaN(latNum) || Number.isNaN(lonNum)){
+        return { ok:false, text:'Bitte gib Breite und Länge ein.', kind:'warn' };
+      }
+      const guessLat = els.latDir.value === 'N' ? latNum : -latNum;
+      const guessLon = els.lonDir.value === 'E' ? lonNum : -lonNum;
+      const targetLat = task.reference.lat;
+      const targetLon = task.reference.lon;
+
+      if(guessLat === targetLat && guessLon === targetLon){
+        return { ok:true, text:'Richtig! Sehr gut gelesen.', kind:'ok' };
+      }
+
+      const messages = [];
+      if(Math.abs(guessLat) === Math.abs(targetLat) && guessLat !== targetLat){
+        messages.push('Die Zahl der Breite stimmt, aber die Richtung der Breite noch nicht.');
+      } else if(guessLat !== targetLat){
+        messages.push('Die Breite stimmt noch nicht.');
+      } else {
+        messages.push('Die Breite stimmt.');
+      }
+
+      if(Math.abs(guessLon) === Math.abs(targetLon) && guessLon !== targetLon){
+        messages.push('Die Zahl der Länge stimmt, aber die Richtung der Länge noch nicht.');
+      } else if(guessLon !== targetLon){
+        messages.push('Die Länge stimmt noch nicht.');
+      } else {
+        messages.push('Die Länge stimmt.');
+      }
+
+      return { ok:false, text:messages.join(' '), kind:'bad' };
+    }
+
+    function evaluateTapTask(task){
+      if(!state.studentMarker){
+        return { ok:false, text:'Bitte tippe zuerst einen Punkt auf der Karte an.', kind:'warn' };
+      }
+      const guess = getRoundedGuess();
+
+      if(task.type === 'equator'){
+        return guess.lat === 0
+          ? { ok:true, text:'Richtig! Das ist der Äquator.', kind:'ok' }
+          : { ok:false, text:'Noch nicht richtig. Der Äquator liegt auf 0° Breite in der Mitte der Karte.', kind:'bad' };
+      }
+
+      if(task.type === 'primeMeridian'){
+        return guess.lon === 0
+          ? { ok:true, text:'Richtig! Das ist der Nullmeridian.', kind:'ok' }
+          : { ok:false, text:'Noch nicht richtig. Der Nullmeridian liegt auf 0° Länge.', kind:'bad' };
+      }
+
+      if(task.type === 'northOfEquator'){
+        return guess.lat > 0
+          ? { ok:true, text:'Richtig! Dieser Punkt liegt nördlich des Äquators.', kind:'ok' }
+          : { ok:false, text:'Noch nicht richtig. Gesucht ist ein Punkt oberhalb des Äquators.', kind:'bad' };
+      }
+
+      if(task.type === 'westOfPrimeMeridian'){
+        return guess.lon < 0
+          ? { ok:true, text:'Richtig! Dieser Punkt liegt westlich des Nullmeridians.', kind:'ok' }
+          : { ok:false, text:'Noch nicht richtig. Gesucht ist ein Punkt links vom Nullmeridian.', kind:'bad' };
+      }
+
+      if(task.type === 'coord' || task.type === 'challengeCoord'){
+        const dLat = guess.lat - task.lat;
+        const dLon = guess.lon - task.lon;
+        if(dLat === 0 && dLon === 0){
+          return { ok:true, text:'Richtig! Du hast die Koordinaten gefunden.', kind:'ok' };
+        }
+        if(dLat === 0){
+          return { ok:false, text:`Die Breite stimmt schon, aber die Länge noch nicht. Dein Punkt liegt ${dLon < 0 ? 'zu weit westlich' : 'zu weit östlich'}.`, kind:'bad' };
+        }
+        if(dLon === 0){
+          return { ok:false, text:`Die Länge stimmt schon, aber die Breite noch nicht. Dein Punkt liegt ${dLat < 0 ? 'zu weit südlich' : 'zu weit nördlich'}.`, kind:'bad' };
+        }
+        return { ok:false, text:`Fast. Dein Punkt liegt ${getDirectionalHint(dLat, dLon)}.`, kind:'bad' };
+      }
+
+      if(task.type === 'latOnly' || task.type === 'challengeLatOnly'){
+        if(guess.lat === task.lat){
+          return { ok:true, text:'Richtig! Die Breite stimmt.', kind:'ok' };
+        }
+        return { ok:false, text:`Noch nicht richtig. Dein Punkt liegt ${guess.lat < task.lat ? 'zu weit südlich' : 'zu weit nördlich'}.`, kind:'bad' };
+      }
+
+      if(task.type === 'condition' || task.type === 'challengeCondition'){
+        const okLat = task.latCondition === 'north' ? guess.lat > 0 : guess.lat < 0;
+        const okLon = task.lonCondition === 'east' ? guess.lon > 0 : guess.lon < 0;
+        if(okLat && okLon){
+          return { ok:true, text:'Richtig! Die Lagebedingungen stimmen.', kind:'ok' };
+        }
+        const parts = [];
+        if(!okLat){
+          parts.push(task.latCondition === 'north' ? 'Der Punkt muss nördlich des Äquators liegen.' : 'Der Punkt muss südlich des Äquators liegen.');
+        }
+        if(!okLon){
+          parts.push(task.lonCondition === 'east' ? 'Der Punkt muss östlich des Nullmeridians liegen.' : 'Der Punkt muss westlich des Nullmeridians liegen.');
+        }
+        return { ok:false, text:parts.join(' '), kind:'bad' };
+      }
+
+      if(task.type === 'compare'){
+        if(guess.lat > task.reference.lat){
+          return { ok:true, text:'Richtig! Dein Punkt liegt weiter nördlich als der violette Punkt.', kind:'ok' };
+        }
+        return { ok:false, text:'Noch nicht richtig. Dein Punkt muss oberhalb des violetten Punkts liegen.', kind:'bad' };
+      }
+
+      return { ok:false, text:'Diese Aufgabe konnte nicht geprüft werden.', kind:'bad' };
+    }
+
+    function checkCurrentTask(){
+      const task = state.tasks[state.index];
+      if(!task) return;
+
+      const result = taskNeedsInput(task) ? evaluateReadTask(task) : evaluateTapTask(task);
+      setFeedback(result.text, result.kind);
+
+      if(state.level === 5){
+        if(result.ok) state.score += 1;
+        state.index += 1;
+        renderTask();
+        return;
+      }
+
+      if(result.ok){
+        state.index += 1;
+        renderTask();
+      }
+    }
+
+    function nextTask(){
+      const task = state.tasks[state.index];
+      if(!task) return;
+      if(state.level === 5){
+        state.index += 1;
+        renderTask();
+      } else {
+        setFeedback('In den Levels 1–4 geht es erst nach einer richtigen Lösung weiter.', 'warn');
+      }
+    }
+
+    function resetCurrentTask(){
+      state.studentMarker = null;
+      clearInputs();
+      const task = state.tasks[state.index];
+      if(taskNeedsInput(task)){
+        setFeedback('Eingaben zurückgesetzt.', '');
+      } else {
+        setFeedback('Markierung zurückgesetzt.', '');
+      }
+      draw();
+    }
+
+    els.levelBtns.forEach(btn => {
+      btn.addEventListener('click', () => startLevel(Number(btn.dataset.level)));
+    });
+    els.checkBtn.addEventListener('click', checkCurrentTask);
+    els.nextBtn.addEventListener('click', nextTask);
+    els.resetBtn.addEventListener('click', resetCurrentTask);
+    [els.showLat, els.showLon, els.showLabels].forEach(el => el.addEventListener('change', draw));
+
+    wrap.addEventListener('click', handleMapTap);
+    wrap.addEventListener('touchstart', handleMapTap, { passive:false });
+    window.addEventListener('resize', resizeCanvas);
+    document.getElementById('worldMap').addEventListener('load', resizeCanvas);
+
+    resizeCanvas();
+    updateProgress();
+  </script>
+</body>
+</html>
