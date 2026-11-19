@@ -3,16 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f6fa">
+  <meta name="theme-color" content="#171633">
   <title>LFG-Tools</title>
   <link rel="stylesheet" href="style.css">
   <script src="tools.js" defer></script>
   <script src="index.js" defer></script>
-<link rel="stylesheet" href="rechtliches.css">
+  <link rel="stylesheet" href="rechtliches.css">
 </head>
 <body>
-  <main>
-    <header><h1>LFG<span>-</span>Tools</h1></header>
+  <header class="masthead">
+    <div class="container masthead-inner">
+      <h1>LFG<span>-</span>Tools</h1>
+      <div class="search" id="tool-search" role="search" hidden>
+        <label for="query">Tools suchen</label>
+        <input id="query" type="search" placeholder="z. B. Koordinaten" aria-controls="tools" autocomplete="off">
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <p class="search-status" id="search-status" role="status"></p>
     <ul class="tools" id="tools" aria-label="Werkzeuge"></ul>
     <noscript><p>Aktiviere JavaScript, um die Werkzeuge anzuzeigen.</p></noscript>
 <nav class="lfg-rechtliches" aria-label="Rechtliches">
