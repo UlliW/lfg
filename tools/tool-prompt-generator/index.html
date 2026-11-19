@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tool-Prompt-Generator · LFG-Tools</title>
+  <link rel="stylesheet" href="../../rechtliches.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f4f5fb; color: #191933; font: 1rem/1.5 system-ui, sans-serif; }
+    .wrap { width: min(100% - 2rem, 72rem); margin-inline: auto; }
+    header { padding-block: 1.5rem 2rem; background: #171633; color: #fff; }
+    header a { color: #a9f6dc; }
+    h1 { font-size: clamp(1.8rem, 5vw, 3.25rem); line-height: 1.05; overflow-wrap: anywhere; margin: .75rem 0 .5rem; }
+    h2 { margin: 0 0 .65rem; font-size: 1.35rem; }
+    p { margin: 0 0 1rem; }
+    header p { margin: 0; }
+    main { display: grid; gap: 1rem; padding-block: 1.25rem; }
+    .panel { min-width: 0; border: 1px solid #d4cbea; border-radius: 1rem; background: #fff; padding: clamp(1rem, 3vw, 1.5rem); }
+    .field { margin-bottom: .9rem; }
+    label { display: block; font-weight: 650; margin-bottom: .25rem; }
+    input, textarea, select, button { font: inherit; }
+    input, textarea, select { width: 100%; color: inherit; background: #faf9ff; border: 1px solid #827894; border-radius: .55rem; padding: .55rem .7rem; }
+    textarea { resize: vertical; }
+    small { display: block; color: #4c4561; margin-bottom: .3rem; }
+    button { min-height: 2.75rem; border: 1px solid #49238e; border-radius: .55rem; background: #49238e; color: white; font-weight: 650; padding: .5rem .85rem; cursor: pointer; }
+    :focus-visible { outline: 3px solid #00856a; outline-offset: 3px; }
+    #prompt { min-height: 18rem; }
+    #feedback { margin: .6rem 0 0; }
+    [hidden] { display: none !important; }
+    @media (min-width: 54rem) {
+      main { grid-template-columns: 1fr 1fr; align-items: start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <a href="../../index.html">← LFG-Tools</a>
+      <h1>Tool-Prompt-Generator</h1>
+      <p>Beschreibe deine Idee und erstelle einen Prompt für die KI deiner Wahl.</p>
+    </div>
+  </header>
+  <main class="wrap">
+    <form class="panel" id="idea">
+      <h2>Deine Tool-Idee</h2>
+      <p><small>Nutze erfundene Beispiele. Lass Namen und andere persönliche Daten weg.</small></p>
+      <div class="field">
+        <label for="name">Arbeitstitel</label>
+        <input id="name" name="name" required maxlength="90" placeholder="z. B. Brüche-Training">
+      </div>
+      <div class="field">
+        <label for="audience">Wer nutzt das Tool?</label>
+        <input id="audience" name="audience" required maxlength="180" placeholder="z. B. Schülerinnen und Schüler in Klasse 6">
+      </div>
+      <div class="field">
+        <label for="goal">Was soll das Tool erleichtern?</label>
+        <textarea id="goal" name="goal" rows="2" required maxlength="700" placeholder="z. B. Brüche selbstständig kürzen üben"></textarea>
+      </div>
+      <div class="field">
+        <label for="flow">Wie benutzt man es?</label>
+        <small id="flow-hint">Beschreibe Eingabe oder Klick, Reaktion des Tools und sichtbares Ergebnis.</small>
+        <textarea id="flow" name="flow" rows="3" required maxlength="1800" aria-describedby="flow-hint" placeholder="z. B. Das Tool zeigt einen Bruch. Ich gebe Zähler und Nenner ein und erhalte eine Rückmeldung."></textarea>
+      </div>
+      <div class="field">
+        <label for="example">Ein konkreter Testfall (optional)</label>
+        <textarea id="example" name="example" rows="2" maxlength="750" placeholder="z. B. Bei 6/8 soll 3/4 als richtig gelten."></textarea>
+      </div>
+      <button type="submit" id="generate" disabled>Prompt erstellen</button>
+    </form>
+    <section class="panel" aria-labelledby="result-title">
+      <h2 id="result-title">Dein Prompt</h2>
+      <p id="intro">Fülle die Felder aus. Hier erscheint der fertige Prompt.</p>
+      <div id="result" hidden>
+        <p>Du kannst den Text vor dem Kopieren bearbeiten. Füge ihn anschließend in die KI deiner Wahl ein.</p>
+        <label for="prompt">Prompt-Text</label>
+        <textarea id="prompt" spellcheck="false"></textarea>
+        <button id="copy" type="button">Prompt kopieren</button>
+      </div>
+      <p id="feedback" role="status"></p>
+    </section>
+  </main>
+  <nav class="lfg-rechtliches" aria-label="Rechtliches">
+    <a href="https://lfg-ma.de/impressum-b/">Impressum</a>
+    <a href="https://lfg-ma.de/datenschutz/">Datenschutz</a>
+  </nav>
+  <script>
+    const form = document.querySelector("#idea");
+    const prompt = document.querySelector("#prompt");
+    const feedback = document.querySelector("#feedback");
+    document.querySelector("#generate").disabled = false;
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const read = key => data.get(key).trim();
+      const name = read("name");
+      const audience = read("audience");
+      const goal = read("goal");
+      const flow = read("flow");
+      const example = read("example");
+
+      if (![name, audience, goal, flow].every(Boolean)) {
+        feedback.textContent = "Fülle bitte alle Pflichtfelder mit Text aus.";
+        return;
+      }
+
+      prompt.value = [
+        "Du entwickelst kleine, barrierearme Browser-Tools für den Unterricht. Erstelle ein verwendbares Tool für LFG-Tools.",
+        "",
+        "MEINE IDEE",
+        "Arbeitstitel: " + name,
+        "Zielgruppe: " + audience,
+        "Ziel im Unterricht: " + goal,
+        "Bedienung und Ergebnis: " + flow,
+        example ? "Konkreter Testfall: " + example : "Leite aus der Idee einen konkreten Testfall ab.",
+        "",
+        "ANFORDERUNGEN",
+        "- Halte den Funktionsumfang klein. Frage nach, wenn eine fachliche oder funktionale Entscheidung für die Umsetzung wesentlich ist.",
+        "- Liefere eine vollständige index.html mit HTML, CSS und JavaScript. Die Datei soll per Doppelklick und auf GitHub Pages aus einem Unterordner funktionieren.",
+        "- Verwende keine externen Bibliotheken, Schriften, Bilder oder Schnittstellen. Das Tool braucht keine Anmeldung, keinen Server, keine API-Schlüssel und keine Übertragung oder dauerhafte Speicherung von Eingaben.",
+        "- Gestalte die Oberfläche auf Deutsch und gut lesbar auf Smartphone, iPad und PC. Verwende beschriftete Eingabefelder, deutliche Kontraste, sichtbaren Tastaturfokus und ausreichend große Schaltflächen.",
+        "- Gib verständliche Rückmeldungen bei fehlenden oder ungültigen Eingaben. Gib eingegebenen Text als Text aus. Nutze erfundene Beispieldaten.",
+        "",
+        "DEINE AUSGABE",
+        "1. Gib die vollständige index.html in einem Codeblock aus.",
+        "2. Formuliere einen kurzen Kacheltitel und eine stichwortartige Kurzbeschreibung für die Einreichung bei LFG-Tools.",
+        "3. Gib kurze Prüfschritte für den normalen Ablauf, einen Grenzfall und die Bedienung auf Smartphone oder iPad an."
+      ].join("\n");
+
+      document.querySelector("#result").hidden = false;
+      document.querySelector("#intro").hidden = true;
+      feedback.textContent = "Prompt erstellt.";
+      prompt.focus();
+    });
+
+    document.querySelector("#copy").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(prompt.value);
+        feedback.textContent = "Prompt kopiert.";
+      } catch {
+        prompt.focus();
+        prompt.select();
+        feedback.textContent = "Der Prompt ist markiert. Kopiere ihn über das Browsermenü oder mit ⌘/Strg+C.";
+      }
+    });
+  </script>
+</body>
+</html>
