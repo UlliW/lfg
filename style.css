@@ -64,25 +64,25 @@ main { padding-block: clamp(1.25rem, 3.4vw, 3rem) 1rem; }
   padding: 0;
   margin: 0;
 }
-.tools li { --tile: #d9c8ff; --accent: #5d32bf; }
-.tools li:nth-child(4n + 2) { --tile: #b7ecd9; --accent: #006548; }
-.tools li:nth-child(4n + 3) { --tile: #ffcabb; --accent: #943b24; }
-.tools li:nth-child(4n + 4) { --tile: #bfdcff; --accent: #2554a6; }
+.tools li { --tile: #49238e; --accent: #ddc8ff; }
+.tools li:nth-child(4n + 2) { --tile: #00574b; --accent: #a9f6dc; }
+.tools li:nth-child(4n + 3) { --tile: #84331f; --accent: #ffd4c6; }
+.tools li:nth-child(4n + 4) { --tile: #1e4289; --accent: #c4deff; }
 .tools a {
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 11rem;
   height: 100%;
   padding: clamp(1rem, 1.8vw, 1.6rem);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--tile);
   border-top: .3rem solid var(--accent);
   border-radius: 1rem;
   background: var(--tile);
   box-shadow: 0 5px 14px #17163326;
-  color: inherit;
+  color: #fff;
   text-decoration: none;
 }
-.tools a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.tools a:focus-visible { outline: 3px solid var(--tile); outline-offset: 4px; }
 h2 {
   margin: 0;
   font-size: clamp(1.3rem, 2vw, 1.8rem);
@@ -90,7 +90,7 @@ h2 {
   letter-spacing: -.035em;
   overflow-wrap: anywhere;
 }
-.tools p { margin: .65rem 0 .9rem; line-height: 1.45; color: #383853; }
+.tools p { margin: .65rem 0 .9rem; line-height: 1.45; color: #fff; }
 .arrow {
   display: grid;
   place-items: center;
@@ -99,7 +99,7 @@ h2 {
   height: 2.4rem;
   border-radius: 50%;
   background: var(--accent);
-  color: #fff;
+  color: var(--tile);
   font-size: 1.3rem;
 }
 @media (hover: hover) {
