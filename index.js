@@ -16,7 +16,17 @@ for (const tool of tools) {
   arrow.setAttribute("aria-hidden", "true");
   arrow.textContent = /^https?:\/\//i.test(tool.url) ? "↗" : "→";
 
-  link.append(title, description, arrow);
+  link.append(title, description);
+  const metadata = document.createElement("div");
+  metadata.className = "tool-meta";
+  for (const [label, value] of [["Zielgruppe", tool.audience], ["Fächer", tool.subjects]]) {
+    if (!value) continue;
+    const tag = document.createElement("span");
+    tag.textContent = label + ": " + value;
+    metadata.append(tag);
+  }
+  if (metadata.children.length) link.append(metadata);
+  link.append(arrow);
   item.append(link);
   list.append(item);
 }
@@ -33,8 +43,8 @@ function normalize(text) {
 }
 
 const entries = Array.from(list.children, (item, index) => {
-  const { title, description } = tools[index];
-  return { item, text: normalize(title + " " + description) };
+  const { title, description, audience, subjects } = tools[index];
+  return { item, text: normalize([title, description, audience, subjects].join(" ")) };
 });
 
 function filterTools() {

@@ -50,8 +50,12 @@
         <input id="name" name="name" required maxlength="90" placeholder="z. B. Brüche-Training">
       </div>
       <div class="field">
-        <label for="audience">Wer nutzt das Tool?</label>
-        <input id="audience" name="audience" required maxlength="180" placeholder="z. B. Schülerinnen und Schüler in Klasse 6">
+        <label for="audience">Zielgruppe</label>
+        <input id="audience" name="audience" required maxlength="180" placeholder="z. B. ab Klasse 7, Klassen 5–6 oder Lehrkräfte">
+      </div>
+      <div class="field">
+        <label for="subjects">Fächer</label>
+        <input id="subjects" name="subjects" required maxlength="180" placeholder="z. B. Geographie, Mathematik oder alle Fächer">
       </div>
       <div class="field">
         <label for="goal">Was soll das Tool erleichtern?</label>
@@ -65,6 +69,11 @@
       <div class="field">
         <label for="example">Ein konkreter Testfall (optional)</label>
         <textarea id="example" name="example" rows="2" maxlength="750" placeholder="z. B. Bei 6/8 soll 3/4 als richtig gelten."></textarea>
+      </div>
+      <div class="field">
+        <label for="reference">Vorbild für Layout oder Bedienung (optional)</label>
+        <small id="reference-hint">Nenne das Tool oder füge einen Link ein. Beschreibe kurz, was dir daran gefällt. Einen Screenshot oder eine eigene HTML-Datei kannst du im KI-Chat zusätzlich anhängen.</small>
+        <textarea id="reference" name="reference" rows="3" maxlength="1200" aria-describedby="reference-hint" placeholder="z. B. Wie beim GFS-Prompt-Generator sollen die Eingaben links stehen und das Ergebnis rechts erscheinen."></textarea>
       </div>
       <button type="submit" id="generate" disabled>Prompt erstellen</button>
     </form>
@@ -96,11 +105,13 @@
       const read = key => data.get(key).trim();
       const name = read("name");
       const audience = read("audience");
+      const subjects = read("subjects");
       const goal = read("goal");
       const flow = read("flow");
       const example = read("example");
+      const reference = read("reference");
 
-      if (![name, audience, goal, flow].every(Boolean)) {
+      if (![name, audience, subjects, goal, flow].every(Boolean)) {
         feedback.textContent = "Fülle bitte alle Pflichtfelder mit Text aus.";
         return;
       }
@@ -111,20 +122,28 @@
         "MEINE IDEE",
         "Arbeitstitel: " + name,
         "Zielgruppe: " + audience,
+        "Fächer: " + subjects,
         "Ziel im Unterricht: " + goal,
         "Bedienung und Ergebnis: " + flow,
         example ? "Konkreter Testfall: " + example : "Leite aus der Idee einen konkreten Testfall ab.",
         "",
+        ...(reference ? [
+          "VORBILD FÜR LAYOUT ODER BEDIENUNG",
+          reference,
+          "Nutze die genannten Merkmale als Anregung und passe sie an die neue Aufgabe an. Nutze einen beigefügten Screenshot oder eine freigegebene HTML-Datei, falls vorhanden. Falls du das Vorbild nicht öffnen kannst, arbeite mit meiner Beschreibung. Frage bei Bedarf nach dem konkreten Merkmal.",
+          "",
+        ] : []),
         "ANFORDERUNGEN",
         "- Halte den Funktionsumfang klein. Frage nach, wenn eine fachliche oder funktionale Entscheidung für die Umsetzung wesentlich ist.",
         "- Liefere eine vollständige index.html mit HTML, CSS und JavaScript. Die Datei soll per Doppelklick und auf GitHub Pages aus einem Unterordner funktionieren.",
+        "- Setze ans Seitenende eine Navigation mit drei gut sichtbaren Links: Zurück zu LFG-Tools (../../index.html), Impressum (https://lfg-ma.de/impressum-b/) und Datenschutz (https://lfg-ma.de/datenschutz/). Der Rücklink soll auch bei einem direkten Aufruf des Tools funktionieren. Gehe davon aus, dass die Tool-Datei unter tools/<tool-name>/index.html liegt.",
         "- Verwende keine externen Bibliotheken, Schriften, Bilder oder Schnittstellen. Das Tool braucht keine Anmeldung, keinen Server, keine API-Schlüssel und keine Übertragung oder dauerhafte Speicherung von Eingaben.",
         "- Gestalte die Oberfläche auf Deutsch und gut lesbar auf Smartphone, iPad und PC. Verwende beschriftete Eingabefelder, deutliche Kontraste, sichtbaren Tastaturfokus und ausreichend große Schaltflächen.",
         "- Gib verständliche Rückmeldungen bei fehlenden oder ungültigen Eingaben. Gib eingegebenen Text als Text aus. Nutze erfundene Beispieldaten.",
         "",
         "DEINE AUSGABE",
         "1. Gib die vollständige index.html in einem Codeblock aus.",
-        "2. Formuliere einen kurzen Kacheltitel und eine stichwortartige Kurzbeschreibung für die Einreichung bei LFG-Tools.",
+        "2. Formuliere einen kurzen Kacheltitel und eine stichwortartige Kurzbeschreibung. Gib Zielgruppe und Fächer als separate kurze Angaben für die Kachel aus. Das sind die Angaben für die Einreichung bei LFG-Tools.",
         "3. Gib kurze Prüfschritte für den normalen Ablauf, einen Grenzfall und die Bedienung auf Smartphone oder iPad an."
       ].join("\n");
 
