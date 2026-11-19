@@ -18,15 +18,15 @@ body { margin: 0; }
 }
 .masthead-inner {
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: clamp(1.4rem, 4vw, 3rem);
-  padding-block: clamp(2rem, 6vw, 5rem);
+  gap: clamp(1rem, 2.5vw, 2.25rem);
+  padding-block: clamp(1.25rem, 2.7vw, 2.25rem);
 }
 h1 {
   margin: 0;
-  font-size: clamp(3rem, 8vw, 7rem);
+  font-size: clamp(2.5rem, 5.5vw, 4.75rem);
   font-weight: 810;
   line-height: .95;
   letter-spacing: -.075em;
@@ -104,6 +104,10 @@ h2 {
 }
 @media (hover: hover) {
   .tools a:hover { box-shadow: 0 9px 21px #17163336; }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .tools a { transition: transform .18s ease, box-shadow .18s ease; }
+  .tools a:hover { transform: translateY(-4px); }
 }
 @media (min-width: 37rem) {
   .tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
