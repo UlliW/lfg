@@ -11,6 +11,7 @@
 @media(max-width:350px){.phase-btn{font-size:.75rem;gap:6px;padding:10px 8px}.brand{font-size:.78rem}.context-grid{grid-template-columns:1fr}.context-grid>*{grid-column:1}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="../../rechtliches.css">
 </head>
 <body>
 <a href="#workspace" class="skip">Zu den Prompts springen</a>
@@ -280,5 +281,9 @@ async function copy(){const text=$('output').value;let ok=false;try{if(navigator
 ctxKeys.forEach(k=>$(k).addEventListener('input',persist));$('remember').onchange=persist;$('output').addEventListener('input',()=>{edited=true;status();saveDraft()});$('regenerate').onclick=()=>{if(edited&&!confirm('Deine Änderungen am Prompt durch einen neu erstellten Text ersetzen?'))return;edited=false;refreshOutput();notify('Prompt aktualisiert.')};$('copyPrompt').onclick=copy;$('closePrompt').onclick=()=>$('promptDialog').close();$('promptDialog').addEventListener('close',saveDraft);$('helpOpen').onclick=()=>$('helpDialog').showModal();$('closeHelp').onclick=()=>$('helpDialog').close();$('helpDone').onclick=()=>$('helpDialog').close();$('clearData').onclick=()=>{if(!confirm('Alle Angaben und Prompt-Entwürfe dieses Generators auf diesem Gerät löschen?'))return;try{localStorage.removeItem(KEY)}catch(e){}ctxKeys.forEach(k=>$(k).value='');$('remember').checked=false;drafts={};active=null;edited=false;$('output').value='';$('taskFields').replaceChildren();updateSummary();notify('Deine Angaben wurden gelöscht.')};
 readStorage();showStorageState();render();
 </script>
+<nav class="lfg-rechtliches" aria-label="Rechtliches">
+  <a href="https://lfg-ma.de/impressum-b/">Impressum</a>
+  <a href="https://lfg-ma.de/datenschutz/">Datenschutz</a>
+</nav>
 </body>
 </html>
