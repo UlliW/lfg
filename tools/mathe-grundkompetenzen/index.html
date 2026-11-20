@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mathe-Grundlagen · LFG-Tools</title>
+<style>
+  :root { font: 17px/1.55 system-ui,sans-serif; color: #172f35; background: #f0f4f4; }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  main, footer { max-width: 1080px; margin: auto; padding: clamp(16px,4vw,40px); }
+  header { padding-bottom: 24px; }
+  .brand { color: #365d64; font-weight: 750; letter-spacing: .06em; font-size: .8rem; }
+  h1 { font-size: clamp(2rem,6vw,3.4rem); letter-spacing: -.045em; line-height: 1.1; margin: 12px 0; }
+  h2 { font-size: 1.5rem; line-height: 1.25; margin: 0 0 12px; }
+  h3 { margin: 0 0 8px; font-size: 1.12rem; }
+  p { margin: 10px 0; }
+  button, input { font: inherit; }
+  button, .grade, footer a { min-height: 48px; }
+  button {
+    border: 1px solid #6d888e; border-radius: 12px; padding: 10px 18px;
+    background: white; color: #183c44; cursor: pointer; font-weight: 650;
+  }
+  button:hover { background: #e5f2ef; }
+  .primary { background: #155e58; border-color: #155e58; color: white; }
+  .primary:hover { background: #104841; }
+  :focus-visible { outline: 3px solid #914500; outline-offset: 4px; }
+  input { border: 2px solid #6d888e; border-radius: 10px; padding: 12px; min-height: 48px; max-width: 100%; }
+  input[type=text] { width: 100%; }
+  [aria-invalid=true] { border-color: #a12c22; }
+  fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+  legend { font-weight: 700; margin-bottom: 10px; }
+  .grades, .actions, nav { display: flex; gap: 10px; flex-wrap: wrap; }
+  .grade { display: flex; align-items: center; gap: 8px; border: 1px solid #81999e; padding: 8px 14px; border-radius: 12px; background: white; cursor: pointer; }
+  .grade:has(input:checked) { background: #d6ece6; border-color: #155e58; }
+  input[type=radio] { accent-color: #155e58; width: 20px; height: 20px; min-height: 0; margin: 0; flex-shrink: 0; }
+  .panel, .tile, details { background: white; border: 1px solid #cfdddd; border-radius: 18px; padding: clamp(16px,3vw,28px); margin-top: 20px; }
+  .hero { background: #123e43; color: white; }
+  .hero button { margin-top: 12px; background: #f4da86; color: #172f35; border-color: #f4da86; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,265px),1fr)); gap: 16px; margin-top: 20px; }
+  .tile { margin: 0; display: flex; flex-direction: column; align-items: start; }
+  .tile button { margin-top: auto; }
+  .muted { color: #47636b; font-size: .92rem; }
+  .eyebrow { color: #365d64; font-weight: 700; font-size: .85rem; margin-bottom: 10px; }
+  .question { font-size: clamp(1.2rem,3vw,1.6rem); font-weight: 650; margin: 24px 0; }
+  .options { display: grid; gap: 10px; }
+  .option { display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 52px; border: 1px solid #90a5a8; border-radius: 10px; cursor: pointer; }
+  .option:has(input:checked) { background: #e2f0ec; border-color: #155e58; }
+  .error { color: #9b291f; font-weight: 650; }
+  .feedback { background: #f6efd9; border-left: 5px solid #986d14; padding: 16px; margin: 18px 0; border-radius: 8px; }
+  .good { background: #e2f2e9; border-color: #2f704b; }
+  .example { padding: 16px; background: #eff5f4; border-radius: 12px; white-space: pre-line; }
+  progress { width: 100%; height: 12px; accent-color: #155e58; }
+  .actions { margin-top: 20px; }
+  summary { cursor: pointer; font-weight: 700; min-height: 44px; padding: 8px 0; }
+  footer { padding-top: 10px; }
+  footer a { display: inline-flex; align-items: center; color: #155e58; font-weight: 650; }
+  a { color: #155e58; overflow-wrap: anywhere; }
+  li { margin-bottom: 10px; }
+  .status { font-size: .9rem; padding: 4px 10px; border-radius: 8px; background: #eaf0f0; }
+  .strip { display: flex; gap: 3px; margin: 12px 0; max-width: 400px; }
+  .strip span { flex: 1; height: 28px; border: 1px solid #155e58; background: white; }
+  .strip .filled { background: #155e58; }
+  .skip { position: absolute; left: 12px; top: -100px; background: white; padding: 10px; }
+  .skip:focus { top: 8px; }
+  @media (max-width: 420px) {
+    .grades { gap: 6px; }
+    .grade { padding: 8px 10px; }
+    .actions button { flex-grow: 1; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#view">Zum Inhalt</a>
+<main>
+  <header>
+    <div class="brand">LFG-TOOLS · MATHEMATIK</div>
+    <h1>Grundlagen, die tragen.</h1>
+    <p>Finde heraus, was schon klappt. Verstehe den nächsten Schritt und übe gezielt weiter.</p>
+  </header>
+  <fieldset>
+    <legend>Für welche Klasse möchtest du deine Grundlagen prüfen?</legend>
+    <div class="grades" id="grades"></div>
+  </fieldset>
+  <p class="muted">Einstieg in die gewählte Klasse · ohne Zeitdruck · Papier zum Rechnen erlaubt</p>
+  <div id="view" tabindex="-1"></div>
+  <details>
+    <summary>Für Lehrkräfte · Auswahl und Bildungsplanbezug</summary>
+    <p>Die sechs Bereiche je Klasse bilden eine kompakte Auswahl wichtiger Voraussetzungen zu Beginn der Klassenstufe. Der Bildungsplan bündelt Standards für 5/6, 7/8 und 9/10. Die jährliche Zuordnung hier ist eine didaktische Setzung und kann vom Schulcurriculum abweichen.</p>
+    <p>Orientierung am Gymnasium Baden-Württemberg, Mathematik V3.0 vom 21. Mai 2026, Abschnitte 3.1–3.3. Für die derzeitigen G8-Jahrgänge wurde V2 berücksichtigt. Im Schuljahr 2026/27 gilt G9 aufwachsend bis Klasse 7.</p>
+    <p>Jeder Check enthält zwei Stichproben pro Bereich. Er gibt Übungshinweise. Konstruktionen, ausführliche Begründungen und das gesamte Jahrescurriculum werden damit nicht erfasst. Besprich auffällige Ergebnisse mit der Lehrkraft.</p>
+    <p>Ein Übungsdurchgang umfasst drei Aufgaben. Er verändert das ursprüngliche Checkergebnis nicht. Ergebnisse bleiben während dieser geöffneten Seite erhalten und gehen beim Neuladen verloren. Alle Aufgaben und Beispiele sind eigens erstellt.</p>
+    <p><a href="https://www.bildungsplaene-bw.de/,Lde/DE_BW_BILDUNGSPLAENE_GEN2X_BPBW_ALLG_GYM_M(V3.0)">Bildungsplan Mathematik V3.0</a> ·
+    <a href="https://www.bildungsplaene-bw.de/,Lde/BP2016BW_ALLG_GYM_M.V2_IK">Bildungsplan Mathematik V2</a> ·
+    <a href="https://www.bildungsplaene-bw.de/33092934">Hinweise zur Einführung von G9</a></p>
+  </details>
+  <noscript><p>Bitte aktiviere JavaScript, um den Check und die Übungen zu verwenden.</p></noscript>
+</main>
+<footer>
+  <nav aria-label="LFG-Tools und rechtliche Informationen">
+    <a href="../../index.html">Zurück zu LFG-Tools</a>
+    <a href="https://lfg-ma.de/impressum-b/">Impressum</a>
+    <a href="https://lfg-ma.de/datenschutz/">Datenschutz</a>
+  </nav>
+</footer>
+<script>
+"use strict";
+const format = n => Number(n.toFixed(8)).toLocaleString("de-DE", {useGrouping:false, maximumFractionDigits:8});
+const numberTask = (text, answer, solution, unit = "") => ({text, answer, solution, unit});
+const choiceTask = (text, options, answer, solution) => ({text, options, answer, solution});
+const skills = {};
+function add(id, title, goal, explanation, prerequisite, task) {
+  skills[id] = {id, title, goal, explanation, prerequisite, task};
+}
+
+// Zwei verschiedene Aufgabenformen je Bereich. Die Zahlen variieren mit n.
+add("place", "Zahlen und Stellenwerte", "Stellenwert und Zahlengröße verstehen.",
+  "Der Wert einer Ziffer hängt von ihrem Platz ab. Zehn Einer sind ein Zehner, zehn Zehner ein Hunderter. Beim Runden entscheidet die nächste Stelle.",
+  [], n => {
+    const a = 3 + n % 5;
+    return n % 2 === 0
+      ? numberTask("Welchen Wert hat die Ziffer " + a + " in " + (a*1000+240) + "?", a*1000, a + " steht an der Tausenderstelle, also " + a + " · 1000.")
+      : numberTask("Runde " + (a*100+68) + " auf volle Hunderter.", (a+1)*100, "Die Zehnerziffer ist 6. Daher wird zum nächsten Hunderter aufgerundet.");
+  });
+add("add", "Addieren und Subtrahieren", "Mengen zusammenfassen und Unterschiede bestimmen.",
+  "Addition verbindet Mengen. Subtraktion bestimmt, was übrig bleibt oder wie groß ein Unterschied ist. Mit der Umkehroperation kannst du prüfen.",
+  ["place"], n => {
+    const a = 125 + n*13, b = 48 + n*2;
+    return n % 2 === 0
+      ? numberTask(a + " + " + b + " = ?", a+b, a + " + " + b + " = " + (a+b) + ". Prüfe durch Subtraktion.")
+      : numberTask("In einer Box liegen " + a + " Karten. " + b + " werden verteilt. Wie viele bleiben?", a-b, a + " − " + b + " = " + (a-b) + ".");
+  });
+add("multiply", "Multiplizieren und Dividieren", "Gleiche Gruppen bilden und gerecht aufteilen.",
+  "4 · 6 bedeutet vier Gruppen mit je sechs Dingen. Bei 24 : 6 fragst du, wie viele Sechsergruppen in 24 passen. Multiplikation und Division sind Umkehroperationen.",
+  ["add"], n => {
+    const a = 4 + n%5, b = 6 + n%3;
+    return n % 2 === 0
+      ? numberTask(a + " Packungen enthalten je " + b + " Stifte. Wie viele Stifte sind es?", a*b, a + " · " + b + " = " + a*b + ".")
+      : numberTask(a*b + " Karten werden gleichmäßig an " + a + " Kinder verteilt. Wie viele bekommt jedes?", b, a*b + " : " + a + " = " + b + ".");
+  });
+add("units", "Größen und Einheiten", "Längen und Zeitangaben umrechnen.",
+  "Eine Größe bleibt beim Umrechnen gleich. Nur die Einheit und die Maßzahl ändern sich. 1 m = 100 cm. 1 Stunde = 60 Minuten.",
+  ["multiply"], n => {
+    const a = 2 + n%5;
+    return n%2 === 0
+      ? numberTask(a + " m und 25 cm sind zusammen wie viele Zentimeter?", a*100+25, a + " · 100 cm + 25 cm = " + (a*100+25) + " cm.", "cm")
+      : numberTask(a + " Stunden und 15 Minuten sind wie viele Minuten?", a*60+15, a + " · 60 + 15 = " + (a*60+15) + ".", "Minuten");
+  });
+add("shape", "Formen und Umfang", "Eigenschaften eines Rechtecks und seinen Rand verstehen.",
+  "Ein Rechteck hat vier rechte Winkel. Gegenüberliegende Seiten sind gleich lang. Sein Umfang ist die Länge des gesamten Randes.",
+  ["add"], n => {
+    const a = 5+n%4, b = 3+n%2;
+    return n%2 === 0
+      ? numberTask("Ein Rechteck ist " + a + " cm lang und " + b + " cm breit. Wie groß ist sein Umfang?", 2*(a+b), a+" + "+b+" + "+a+" + "+b+" = "+2*(a+b)+" cm.", "cm")
+      : choiceTask("Welche Aussage gilt für jedes Rechteck?", ["Alle Seiten sind gleich lang.", "Gegenüberliegende Seiten sind gleich lang.", "Es hat drei rechte Winkel."], 1, "Ein Rechteck hat vier rechte Winkel und gleich lange gegenüberliegende Seiten.");
+  });
+add("data", "Daten lesen", "Angaben vergleichen und Informationen entnehmen.",
+  "Lies zuerst, was die Zahlen beschreiben. Für einen Unterschied subtrahierst du, für eine Gesamtzahl addierst du. Prüfe, ob deine Antwort zur Frage passt.",
+  ["add"], n => {
+    const a = 8+n, b = 12+n*2;
+    return n%2 === 0
+      ? numberTask("Eine erfundene Umfrage ergibt: " + a + " Kinder kommen zu Fuß, " + b + " mit dem Rad. Wie viele sind es zusammen?", a+b, a+" + "+b+" = "+(a+b)+".")
+      : numberTask("Gruppe A liest " + a + " Bücher, Gruppe B " + b + ". Wie viele Bücher mehr liest B?", b-a, b+" − "+a+" = "+(b-a)+".");
+  });
+add("order", "Rechenregeln", "Klammern und Punkt-vor-Strich beachten.",
+  "Berechne zuerst Klammern. Dann folgen Multiplikation und Division, zuletzt Addition und Subtraktion. Gleichrangige Rechenarten bearbeitest du von links nach rechts.",
+  ["multiply"], n => {
+    const a = 3+n%5;
+    return n%2 === 0
+      ? numberTask(a + " + 4 · 3 = ?", a+12, "Zuerst 4 · 3 = 12, danach "+a+" + 12 = "+(a+12)+".")
+      : numberTask("(" + a + " + 4) · 3 = ?", (a+4)*3, "Zuerst die Klammer: "+a+" + 4 = "+(a+4)+". Dann mal 3.");
+  });
+add("fraction", "Brüche verstehen", "Anteile und gleichwertige Brüche erkennen.",
+  "Der Nenner sagt, in wie viele gleich große Teile das Ganze zerlegt ist. Der Zähler zählt die ausgewählten Teile. Beim Erweitern vervielfachst du Zähler und Nenner mit derselben Zahl.",
+  ["multiply"], n => {
+    const a = 2+n%4, d = a+3;
+    const task = n%2 === 0
+      ? numberTask("Ein Streifen hat "+d+" gleich große Teile. "+a+" sind gefärbt. Welcher Anteil ist gefärbt?", a/d, a+" von "+d+" Teilen ergeben "+a+"/"+d+".")
+      : numberTask("Ergänze den Zähler: 1/3 = ?/"+(3*a), a, "Der Nenner wurde mit "+a+" multipliziert, also auch der Zähler.");
+    if (n%2 === 0) task.strip = [a,d];
+    return task;
+  });
+add("decimal", "Dezimalzahlen", "Zehntel und Hundertstel vergleichen und addieren.",
+  "0,4 sind vier Zehntel, also 40 Hundertstel. Deshalb gilt 0,4 = 0,40. Beim Addieren stehen Komma und gleiche Stellenwerte untereinander.",
+  ["place"], n => {
+    const a = 2+n%5;
+    return n%2 === 0
+      ? numberTask("Wie viel ist "+format(a/10)+" + 0,07?", a/10+.07, a+" Zehntel sind "+a*10+" Hundertstel. Dazu 7 Hundertstel.")
+      : choiceTask("Welche Zahl ist größer?", [format(a/10),format(a/100),"Beide sind gleich."], 0, a+" Zehntel sind mehr als "+a+" Hundertstel.");
+  });
+add("area", "Fläche und Rauminhalt", "Einheitsquadrate und Einheitswürfel zählen.",
+  "Die Fläche eines Rechtecks ist Länge mal Breite. Das zählt die Einheitsquadrate. Beim Quader kommt die Höhe hinzu. Flächen werden etwa in cm², Volumen in cm³ angegeben.",
+  ["shape","multiply"], n => {
+    const a = 4+n%4, b = 3;
+    return n%2 === 0
+      ? numberTask("Ein Rechteck ist "+a+" cm lang und 3 cm breit. Wie groß ist die Fläche?", a*b, a+" Reihen mit je 3 cm² ergeben "+a*b+" cm².", "cm²")
+      : numberTask("Ein Quader ist "+a+" cm lang, 3 cm breit und 2 cm hoch. Wie groß ist sein Volumen?", a*b*2, a+" · 3 · 2 = "+a*b*2+" cm³.", "cm³");
+  });
+add("coordinates", "Koordinaten", "Die Reihenfolge x und y sicher verwenden.",
+  "P(x | y) beschreibt einen Punkt. Du gehst vom Ursprung zuerst waagerecht in x-Richtung, dann senkrecht in y-Richtung. Zum Beispiel P(3 | 2): drei nach rechts, zwei nach oben.",
+  [], n => {
+    const a = 2+n%5, b = a+2;
+    return n%2 === 0
+      ? numberTask("P("+a+" | "+b+") liegt im Koordinatensystem. Wie lautet seine x-Koordinate?", a, "Die erste Zahl im Koordinatenpaar ist x.")
+      : numberTask("Du gehst vom Ursprung "+a+" nach rechts und "+b+" nach oben. Wie lautet die y-Koordinate?", b, "Die Bewegung nach oben bestimmt y.");
+  });
+add("fractionOps", "Mit Brüchen rechnen", "Gleichnamig machen und Bruchteile berechnen.",
+  "Beim Addieren brauchst du gleich große Teile, also einen gemeinsamen Nenner. Beim Multiplizieren werden Zähler mit Zähler und Nenner mit Nenner multipliziert.",
+  ["fraction","multiply"], n => {
+    const d = 3+n%5;
+    return n%2 === 0
+      ? numberTask("1/"+d+" + 1/"+(2*d)+" = ?", 3/(2*d), "1/"+d+" = 2/"+(2*d)+". Zusammen sind es 3/"+(2*d)+".")
+      : numberTask("Wie viel ist die Hälfte von 2/"+d+"?", 1/d, "1/2 · 2/"+d+" = 2/"+(2*d)+" = 1/"+d+".");
+  });
+add("negative", "Negative Zahlen", "Vorzeichen und Änderungen verstehen.",
+  "Auf der Zahlengeraden liegen negative Zahlen links von null. Addieren einer positiven Zahl führt nach rechts. Das Produkt zweier negativer Zahlen ist positiv.",
+  ["order"], n => {
+    const a = 4+n%5;
+    return n%2 === 0
+      ? numberTask("Es sind −"+a+" °C. Die Temperatur steigt um 7 °C. Wie warm ist es jetzt?", 7-a, "Beginne bei −"+a+" und gehe 7 Schritte nach rechts.", "°C")
+      : numberTask("(−"+a+") · (−3) = ?", a*3, "Zwei negative Faktoren ergeben ein positives Produkt: "+a+" · 3 = "+a*3+".");
+  });
+add("ratio", "Proportionale Zuordnungen", "Über den Wert für eine Einheit rechnen.",
+  "Bei einer proportionalen Zuordnung bleibt der Wert pro Einheit gleich. Rechne zuerst auf eine Einheit, dann auf die gesuchte Anzahl. Ohne diesen Zusammenhang ist der Dreisatz nicht automatisch passend.",
+  ["multiply","decimal"], n => {
+    const a = 2+n%4;
+    return n%2 === 0
+      ? numberTask("3 gleiche Hefte kosten "+(3*a)+" €. Wie viel kosten 5 Hefte bei gleichem Stückpreis?", a*5, "Ein Heft kostet "+a+" €. Fünf kosten 5 · "+a+" = "+a*5+" €.", "€")
+      : choiceTask("Welche Zuordnung ist proportional?", ["Taxipreis mit Grundgebühr und Kilometerpreis","Anzahl gleicher Hefte → Preis ohne Rabatt","Alter eines Kindes → Körpergröße"], 1, "Bei gleichem Stückpreis verdoppelt sich mit der Heftanzahl auch der Preis.");
+  });
+add("percent", "Prozente und Anteile", "Hundertstel deuten und Prozentwerte berechnen.",
+  "Prozent bedeutet von hundert. 25 % = 25/100 = 1/4. Um einen Prozentwert zu berechnen, teilst du den Grundwert durch 100 und multiplizierst mit dem Prozentsatz.",
+  ["fraction","decimal","ratio"], n => {
+    const g = 80+20*(n%5);
+    return n%2 === 0
+      ? numberTask("Wie viel sind 25 % von "+g+"?", g/4, "25 % sind ein Viertel. "+g+" : 4 = "+g/4+".")
+      : numberTask("Welchem Prozentsatz entspricht 1/4?", 25, "1/4 = 25/100, also 25 %.", "%");
+  });
+add("angles", "Winkel", "Rechte und gestreckte Winkel verwenden.",
+  "Ein rechter Winkel hat 90°, ein gestreckter Winkel 180°. Zwei benachbarte Winkel an einer Geraden ergänzen sich zu 180°.",
+  [], n => {
+    const a = 35+5*(n%6);
+    return n%2 === 0
+      ? numberTask("Zwei Winkel bilden zusammen einen rechten Winkel. Einer hat "+a+"°. Wie groß ist der andere?", 90-a, "Die Summe beträgt 90°. Rechne 90 − "+a+".", "°")
+      : numberTask("Zwei Nebenwinkel liegen an einer Geraden. Einer hat "+a+"°. Wie groß ist der andere?", 180-a, "Nebenwinkel ergeben 180°. Rechne 180 − "+a+".", "°");
+  });
+add("statistics", "Mittelwert und Häufigkeit", "Daten zusammenfassen und Anteile bestimmen.",
+  "Der Mittelwert verteilt die Summe gleichmäßig auf alle Werte. Die relative Häufigkeit ist die Anzahl eines Ergebnisses geteilt durch die Gesamtzahl der Beobachtungen.",
+  ["data","fraction"], n => {
+    const a = 3+n%5;
+    return n%2 === 0
+      ? numberTask("Bestimme den Mittelwert von "+a+", "+(a+2)+" und "+(a+4)+".", a+2, "Addiere die drei Werte und teile durch 3.")
+      : numberTask("Von 20 Kindern wählen "+a+" das Rad. Wie groß ist die relative Häufigkeit als Bruch oder Dezimalzahl?", a/20, a+" von 20 ergibt "+a+"/20.");
+  });
+add("terms", "Variablen und Terme", "Zahlen einsetzen und gleichartige Terme bündeln.",
+  "Eine Variable steht für eine Zahl. 3x bedeutet 3 · x. Gleichartige Summanden lassen sich zusammenfassen, etwa 3x + 2x = 5x.",
+  ["order","negative"], n => {
+    const a = 2+n%5;
+    return n%2 === 0
+      ? numberTask("Berechne 3x + 2 für x = "+a+".", 3*a+2, "Setze "+a+" für x ein: 3 · "+a+" + 2 = "+(3*a+2)+".")
+      : numberTask("Ergänze den Faktor: "+a+"x + 3x = ? · x", a+3, a+" gleiche x-Pakete und 3 weitere ergeben "+(a+3)+" x-Pakete.");
+  });
+add("equations", "Gleichungen", "Gleichheit durch dieselbe Operation auf beiden Seiten erhalten.",
+  "Eine Gleichung ist wie eine Waage im Gleichgewicht. Verändere beide Seiten auf dieselbe Weise. Beispiel: 3x + 4 = 19 → 3x = 15 → x = 5. Prüfe durch Einsetzen.",
+  ["terms"], n => {
+    const x = 3+n%6, a = 2+n%3;
+    return n%2 === 0
+      ? numberTask("Löse "+a+"x + 5 = "+(a*x+5)+". Wie groß ist x?", x, "Auf beiden Seiten 5 abziehen, dann beide Seiten durch "+a+" teilen.")
+      : choiceTask("Du willst x + 7 = 12 lösen. Welcher Schritt erhält die Gleichheit?", ["Nur links 7 abziehen.","Auf beiden Seiten 7 abziehen.","Links 7 addieren und rechts 7 abziehen."], 1, "Auf beiden Seiten dieselbe Zahl abziehen. So erhältst du x = 5.");
+  });
+add("triangles", "Dreiecke", "Winkelsumme und Flächeninhalt nutzen.",
+  "Die Innenwinkel eines Dreiecks ergeben 180°. Seine Fläche ist die Hälfte von Grundseite mal zugehöriger Höhe. Die Höhe steht senkrecht auf der Grundseite.",
+  ["angles","area"], n => {
+    const a = 4+n%5;
+    return n%2 === 0
+      ? numberTask("Ein Dreieck hat die Winkel 50° und 60°. Wie groß ist der dritte Winkel?", 70, "180° − 50° − 60° = 70°.", "°")
+      : numberTask("Grundseite "+a+" cm, zugehörige Höhe 4 cm. Wie groß ist die Dreiecksfläche?", a*2, a+" · 4 : 2 = "+a*2+" cm².", "cm²");
+  });
+add("probability", "Wahrscheinlichkeit", "Günstige und mögliche Ergebnisse unterscheiden.",
+  "Bei gleich wahrscheinlichen Ergebnissen gilt: Wahrscheinlichkeit = günstige Ergebnisse / alle möglichen Ergebnisse. Das Gegenereignis ergänzt die Wahrscheinlichkeit auf 1.",
+  ["fractionOps","statistics"], n => {
+    const a = 2+n%5, total = a+4;
+    return n%2 === 0
+      ? numberTask("Im Beutel liegen "+a+" rote und 4 blaue gleichartige Kugeln. Wie groß ist die Wahrscheinlichkeit für Rot?", a/total, a+" günstige von "+total+" gleich wahrscheinlichen Kugeln: "+a+"/"+total+".")
+      : numberTask("Die Wahrscheinlichkeit für Rot ist 1/4. Wie groß ist die Wahrscheinlichkeit für Nicht-Rot?", .75, "1 − 1/4 = 3/4.");
+  });
+add("expand", "Klammern und Produkte", "Das Distributivgesetz anwenden.",
+  "Jeder Summand in einer Klammer wird mit dem Faktor davor multipliziert. Beispiel: 3(x + 2) = 3x + 6. Beim Ausklammern gehst du diesen Weg rückwärts.",
+  ["terms","order"], n => {
+    const a = 2+n%5;
+    return n%2 === 0
+      ? numberTask("Ergänze die Zahl: "+a+"(x + 4) = "+a+"x + ?", a*4, "Multipliziere auch die 4 mit "+a+": "+a+" · 4 = "+a*4+".")
+      : choiceTask("Welche Umformung ist für jedes x richtig?", ["2(x + 3) = 2x + 3","2(x + 3) = 2x + 6","2(x + 3) = 5x"], 1, "Der Faktor 2 multipliziert beide Summanden: 2x + 6.");
+  });
+add("linear", "Lineare Funktionen", "Funktionswerte und Steigung verstehen.",
+  "Bei y = m · x + b gibt b den y-Wert bei x = 0 an. Die Steigung m sagt, um wie viel y wächst, wenn x um 1 wächst. Bei m < 0 nimmt y ab.",
+  ["terms","coordinates","ratio"], n => {
+    const m = 2+n%4, x = 3+n%3;
+    return n%2 === 0
+      ? numberTask("Für y = "+m+"x + 1 gilt x = "+x+". Wie groß ist y?", m*x+1, m+" · "+x+" + 1 = "+(m*x+1)+".")
+      : numberTask("Eine Gerade steigt von (1 | 3) zu (3 | "+(3+2*m)+"). Wie groß ist ihre Steigung?", m, "Änderung von y durch Änderung von x: "+(2*m)+" : 2 = "+m+".");
+  });
+add("roots", "Quadrate und Wurzeln", "Quadrieren und Wurzelziehen verbinden.",
+  "a² bedeutet a · a. Die Quadratwurzel √b ist die nichtnegative Zahl, deren Quadrat b ergibt. Beispiel: √49 = 7, denn 7 · 7 = 49.",
+  ["multiply","negative"], n => {
+    const a = 3+n%9;
+    return n%2 === 0
+      ? numberTask("Wie viel ist √"+a*a+"?", a, a+" · "+a+" = "+a*a+". Die Quadratwurzel ist "+a+".")
+      : numberTask("Wie viel ist (−"+a+")²?", a*a, "(−"+a+") · (−"+a+") = "+a*a+".");
+  });
+
+const gradeSkills = {
+  5: ["place","add","multiply","units","shape","data"],
+  6: ["multiply","order","fraction","decimal","area","coordinates"],
+  7: ["fractionOps","negative","ratio","percent","angles","statistics"],
+  8: ["terms","equations","ratio","percent","triangles","probability"],
+  9: ["expand","equations","linear","roots","triangles","probability"]
+};
+const view = document.querySelector("#view");
+const sessions = {};
+let grade = 5;
+let screen = "home";
+let lesson = null;
+let run = null;
+const practiceRounds = {};
+function session() {
+  if (!sessions[grade]) sessions[grade] = {answers: [], position: 0, started: false, done: false, trained: {}};
+  return sessions[grade];
+}
+function el(tag, text, className) {
+  const element = document.createElement(tag);
+  if (text !== undefined) element.textContent = text;
+  if (className) element.className = className;
+  return element;
+}
+function button(text, action, className) {
+  const b = el("button", text, className);
+  b.type = "button";
+  b.addEventListener("click", action);
+  return b;
+}
+function panel(title) {
+  const box = el("section", undefined, "panel");
+  box.append(el("h2", title));
+  view.append(box);
+  return box;
+}
+function show(next = screen) {
+  screen = next;
+  view.replaceChildren();
+  if (screen === "home") home();
+  if (screen === "check") check();
+  if (screen === "result") result();
+  if (screen === "lesson") teach();
+  if (screen === "practice") practice();
+  view.focus();
+}
+function tasks() {
+  return gradeSkills[grade].flatMap(id => [0,1].map(n => ({id, ...skills[id].task(n)})));
+}
+function score(id) {
+  const questions = tasks();
+  return questions.reduce((sum, q, i) => sum + Number(q.id === id && session().answers[i]?.correct === true), 0);
+}
+function openLesson(id) { lesson = id; show("lesson"); }
+function home() {
+  const s = session();
+  const intro = panel("Dein Start in Klasse " + grade);
+  intro.classList.add("hero");
+  intro.append(el("p","12 kurze Aufgaben zu sechs Grundlagen. Plane etwa 8–12 Minuten ein. Du kannst auch direkt eine Grundlage auswählen."));
+  intro.append(button(s.done ? "Ergebnis und Übungsplan ansehen" : s.started ? "Check fortsetzen" : "Grundlagencheck starten", () => {
+    s.started = true;
+    show(s.done ? "result" : "check");
+  }));
+  const grid = el("div", undefined, "grid");
+  gradeSkills[grade].forEach(id => {
+    const skill = skills[id];
+    const card = el("article", undefined, "tile");
+    card.append(el("h3", skill.title), el("p", skill.goal, "muted"));
+    if (s.done) card.append(el("p", score(id)+"/2 im Check", "status"));
+    if (s.trained[id]) card.append(el("p", s.trained[id], "muted"));
+    card.append(button("Erklären und üben", () => openLesson(id)));
+    grid.append(card);
+  });
+  view.append(grid);
+}
+function parseNumber(raw) {
+  const text = raw.trim().replaceAll("−","-").replaceAll(",",".");
+  const decimal = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
+  const parts = text.split("/").map(s => s.trim());
+  if (parts.length > 2 || !parts.every(p => decimal.test(p))) return null;
+  const values = parts.map(Number);
+  if (!values.every(Number.isFinite) || (parts.length === 2 && values[1] === 0)) return null;
+  const value = parts.length === 2 ? values[0]/values[1] : values[0];
+  return Number.isFinite(value) ? value : null;
+}
+function isCorrect(task, value) {
+  return task.options ? value === task.answer : Math.abs(value-task.answer) <= 1e-8;
+}
+function answerForm(box, task, saved, submitText, onAnswer) {
+  box.append(el("p", task.text, "question"));
+  if (task.strip) {
+    const strip = el("div", undefined, "strip");
+    strip.setAttribute("aria-hidden","true");
+    for (let i=0; i<task.strip[1]; i++) strip.append(el("span", "", i<task.strip[0] ? "filled" : ""));
+    box.append(strip);
+  }
+  const form = el("form");
+  form.noValidate = true;
+  const error = el("p", "", "error");
+  error.id = "error";
+  error.setAttribute("role","alert");
+  let input;
+  if (task.options) {
+    const fieldset = el("fieldset");
+    fieldset.append(el("legend","Wähle eine Antwort."));
+    fieldset.className = "options";
+    task.options.forEach((text,i) => {
+      const label = el("label", undefined, "option");
+      const radio = el("input");
+      radio.type = "radio";
+      radio.name = "answer";
+      radio.value = String(i);
+      radio.checked = saved?.value === i;
+      radio.setAttribute("aria-describedby","error");
+      label.append(radio, el("span",text));
+      fieldset.append(label);
+    });
+    form.append(fieldset);
+  } else {
+    const label = el("label","Deine Antwort"+(task.unit ? " in "+task.unit : ""));
+    label.htmlFor = "answer";
+    input = el("input");
+    input.id = "answer";
+    input.type = "text";
+    input.autocomplete = "off";
+    input.spellcheck = false;
+    input.maxLength = 60;
+    input.value = saved?.raw || "";
+    input.setAttribute("aria-describedby","format error");
+    form.append(label, input, el("p","Zahl mit Komma oder Punkt, auch Brüche wie 3/4. Ohne Einheit. Keine Tausendertrennzeichen.", "muted"));
+    form.lastChild.id = "format";
+  }
+  const submit = el("button",submitText,"primary");
+  submit.type = "submit";
+  form.append(error,submit);
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    const selected = form.querySelector("input:checked");
+    const raw = task.options ? selected?.value : input.value;
+    const value = task.options ? (selected ? Number(raw) : null) : parseNumber(raw);
+    if (value === null) {
+      error.textContent = task.options ? "Wähle eine Antwort oder nutze „Weiß ich noch nicht“." : "Gib eine gültige Zahl oder einen Bruch mit Nenner ungleich null ein.";
+      const target = input || form.querySelector("input");
+      target.setAttribute("aria-invalid","true");
+      target.focus();
+      return;
+    }
+    onAnswer({raw, value, correct:isCorrect(task,value)});
+  });
+  form.addEventListener("input", () => {
+    error.textContent = "";
+    form.querySelectorAll("[aria-invalid]").forEach(item => item.removeAttribute("aria-invalid"));
+  });
+  box.append(form);
+  return form;
+}
+function check() {
+  const s = session(), list = tasks(), q = list[s.position];
+  const box = panel("Grundlagencheck · Klasse "+grade);
+  box.append(el("p","Aufgabe "+(s.position+1)+" von "+list.length+" · "+skills[q.id].title,"eyebrow"));
+  const progress = el("progress");
+  progress.max = list.length;
+  progress.value = s.position;
+  progress.setAttribute("aria-label","Bearbeitete Aufgaben");
+  box.append(progress);
+  function save(answer) {
+    s.answers[s.position] = answer;
+    if (s.position === list.length-1) { s.done=true; show("result"); }
+    else { s.position++; show("check"); }
+  }
+  answerForm(box,q,s.answers[s.position],"Antwort übernehmen",save);
+  const actions = el("div",undefined,"actions");
+  actions.append(button("Weiß ich noch nicht",() => save({raw:"",value:null,correct:false,skipped:true})));
+  if (s.position>0) actions.append(button("Zurück",()=>{s.position--;show("check");}));
+  actions.append(button("Pause · zur Übersicht",()=>show("home")));
+  box.append(actions, el("p","Die Auswertung erscheint am Ende. Beim Klassenwechsel bleibt dein Check in dieser geöffneten Seite erhalten.","muted"));
+}
+function result() {
+  const s = session();
+  const box = panel("Dein Übungsplan · Klasse "+grade);
+  const total = s.answers.filter(a=>a.correct).length;
+  box.append(el("p",total+" von 12 Aufgaben richtig."));
+  box.append(el("p","Zwei Aufgaben geben einen ersten Hinweis. Beginne bei den Bereichen mit Übungsbedarf. Erkläre deinen Rechenweg anschließend jemandem."));
+  const ordered = [...gradeSkills[grade]].sort((a,b)=>score(a)-score(b));
+  ordered.forEach(id => {
+    const value = score(id);
+    const card = el("article",undefined,"panel");
+    card.append(el("h3",skills[id].title),el("p",value+"/2 · "+["Hier mit dem Üben beginnen","Noch einmal üben","Im Check gelungen"][value],"status"));
+    if (s.trained[id]) card.append(el("p",s.trained[id],"muted"));
+    card.append(button("Erklärung und Übungen",()=>openLesson(id)));
+    box.append(card);
+  });
+  const review = el("details");
+  review.append(el("summary","Meine Antworten und Lösungswege"));
+  tasks().forEach((q,i)=>{
+    const a = s.answers[i];
+    const submitted = a.skipped ? "übersprungen" : q.options ? q.options[a.value] : a.raw;
+    review.append(el("p",(i+1)+". "+q.text),el("p","Deine Antwort: "+submitted+" · "+(a.correct?"richtig":"noch üben")),el("p",q.solution,"muted"));
+  });
+  box.append(review);
+  const actions = el("div",undefined,"actions");
+  actions.append(button("Zur Übersicht",()=>show("home")),button("Check erneut beginnen",()=>{
+    s.answers=[];s.position=0;s.done=false;s.started=true;show("check");
+  }));
+  box.append(actions);
+}
+function teach() {
+  const skill = skills[lesson];
+  const box = panel(skill.title);
+  box.append(el("p",skill.explanation));
+  const example = skill.task(2);
+  const answer = example.options ? example.options[example.answer] : format(example.answer)+(example.unit ? " "+example.unit : "");
+  box.append(el("h3","Ein Beispiel"),el("p",example.text+"\nLösung: "+answer+"\n"+example.solution,"example"));
+  if (skill.prerequisite.length) {
+    const foundation = el("details");
+    foundation.append(el("summary","Wenn dir das noch schwerfällt"));
+    foundation.append(el("p","Prüfe zuerst diese Grundlagen. Sie helfen bei diesem Thema."));
+    const actions = el("div",undefined,"actions");
+    skill.prerequisite.forEach(id=>actions.append(button(skills[id].title,()=>openLesson(id))));
+    foundation.append(actions);
+    box.append(foundation);
+  }
+  const actions = el("div",undefined,"actions");
+  actions.append(button("Drei Aufgaben üben",()=>{
+    const round = practiceRounds[lesson] || 0;
+    practiceRounds[lesson]=round+1;
+    run={id:lesson,position:0,correct:0,seed:3+round*3,answered:false};
+    show("practice");
+  },"primary"),button("Zur Übersicht",()=>show("home")));
+  if(session().done) actions.append(button("Zum Übungsplan",()=>show("result")));
+  box.append(actions);
+}
+function practice() {
+  const skill = skills[run.id];
+  const box = panel(skill.title+" · Üben");
+  if(run.position === 3) {
+    const text = run.correct+" von 3 Übungen im ersten Versuch richtig.";
+    session().trained[run.id]=text;
+    box.append(el("p",text),el("p",run.correct===3 ? "Erkläre jetzt, warum dein Rechenweg funktioniert. Später kannst du den Check wiederholen." : "Lies die Lösungswege noch einmal und bearbeite danach einen neuen Durchgang."));
+    box.append(button("Zur Erklärung",()=>{lesson=run.id;show("lesson");}),button("Zur Übersicht",()=>show("home")));
+    if(session().done) box.append(button("Zum Übungsplan",()=>show("result")));
+    return;
+  }
+  const task = skill.task(run.seed+run.position);
+  box.append(el("p","Aufgabe "+(run.position+1)+" von 3","eyebrow"));
+  run.answered=false;
+  let form;
+  const actions = el("div",undefined,"actions");
+  function finish(answer) {
+    if(run.answered) return;
+    run.answered=true;
+    if(answer.correct) run.correct++;
+    form.querySelectorAll("input,button").forEach(item=>item.disabled=true);
+    actions.replaceChildren();
+    const feedback = el("div",undefined,"feedback"+(answer.correct?" good":""));
+    feedback.setAttribute("role","status");
+    const solution = task.options ? task.options[task.answer] : format(task.answer)+(task.unit?" "+task.unit:"");
+    feedback.append(el("strong",answer.correct?"Richtig.":"Schau dir den Lösungsweg an."),el("p","Lösung: "+solution),el("p",task.solution));
+    box.append(feedback);
+    const next = button(run.position===2?"Übung abschließen":"Nächste Aufgabe",()=>{run.position++;show("practice");},"primary");
+    actions.append(next);
+    box.append(actions);
+    next.focus();
+  }
+  form=answerForm(box,task,null,"Prüfen",finish);
+  actions.append(button("Weiß ich noch nicht",()=>finish({correct:false})),button("Zur Erklärung",()=>{lesson=run.id;show("lesson");}));
+  box.append(actions);
+}
+for(let value=5;value<=9;value++) {
+  const label = el("label",undefined,"grade");
+  const radio = el("input");
+  radio.type="radio";radio.name="grade";radio.value=String(value);radio.checked=value===grade;
+  radio.addEventListener("change",()=>{grade=value;show("home");});
+  label.append(radio,el("span","Klasse "+value));
+  document.querySelector("#grades").append(label);
+}
+show();
+</script>
+</body>
+</html>
