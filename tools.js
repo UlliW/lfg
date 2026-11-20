@@ -21,7 +21,7 @@ const tools = [
     url: "tools/tool-prompt-generator/index.html",
   },
   {
-    title: "Mathe-Grundkompetenzen",
+    title: "Mathe-Grundlagen",
     description: "Grundlagencheck machen · Übungsplan erhalten · gezielt trainieren",
     audience: "Klassen 5–9",
     subjects: "Mathematik",
