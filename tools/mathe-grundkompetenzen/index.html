@@ -75,8 +75,7 @@
 <main>
   <header>
     <div class="brand">LFG-TOOLS · MATHEMATIK</div>
-    <h1>Grundlagen, die tragen.</h1>
-    <p>Finde heraus, was schon klappt. Verstehe den nächsten Schritt und übe gezielt weiter.</p>
+    <h1>Mathematik-Grundlagen</h1>
   </header>
   <fieldset>
     <legend>Für welche Klasse möchtest du deine Grundlagen prüfen?</legend>
@@ -89,7 +88,7 @@
     <p>Die sechs Bereiche je Klasse bilden eine kompakte Auswahl wichtiger Voraussetzungen zu Beginn der Klassenstufe. Der Bildungsplan bündelt Standards für 5/6, 7/8 und 9/10. Die jährliche Zuordnung hier ist eine didaktische Setzung und kann vom Schulcurriculum abweichen.</p>
     <p>Orientierung am Gymnasium Baden-Württemberg, Mathematik V3.0 vom 21. Mai 2026, Abschnitte 3.1–3.3. Für die derzeitigen G8-Jahrgänge wurde V2 berücksichtigt. Im Schuljahr 2026/27 gilt G9 aufwachsend bis Klasse 7.</p>
     <p>Jeder Check enthält zwei Stichproben pro Bereich. Er gibt Übungshinweise. Konstruktionen, ausführliche Begründungen und das gesamte Jahrescurriculum werden damit nicht erfasst. Besprich auffällige Ergebnisse mit der Lehrkraft.</p>
-    <p>Ein Übungsdurchgang umfasst drei Aufgaben. Er verändert das ursprüngliche Checkergebnis nicht. Ergebnisse bleiben während dieser geöffneten Seite erhalten und gehen beim Neuladen verloren. Alle Aufgaben und Beispiele sind eigens erstellt.</p>
+    <p>Ein Übungsdurchgang umfasst drei Aufgaben aus vier Aufgabenformen je Bereich. Die Auswahl wird gemischt. Innerhalb der geöffneten Seite werden bereits gezogene Aufgaben erst nach Ausschöpfen des jeweiligen Pools erneut verwendet. Auch ein neuer Check erhält eine neue Auswahl. Er verändert das ursprüngliche Checkergebnis nicht. Ergebnisse bleiben während dieser geöffneten Seite erhalten und gehen beim Neuladen verloren. Alle Aufgaben und Beispiele sind eigens erstellt.</p>
     <p><a href="https://www.bildungsplaene-bw.de/,Lde/DE_BW_BILDUNGSPLAENE_GEN2X_BPBW_ALLG_GYM_M(V3.0)">Bildungsplan Mathematik V3.0</a> ·
     <a href="https://www.bildungsplaene-bw.de/,Lde/BP2016BW_ALLG_GYM_M.V2_IK">Bildungsplan Mathematik V2</a> ·
     <a href="https://www.bildungsplaene-bw.de/33092934">Hinweise zur Einführung von G9</a></p>
@@ -309,6 +308,347 @@ add("roots", "Quadrate und Wurzeln", "Quadrieren und Wurzelziehen verbinden.",
       : numberTask("Wie viel ist (−"+a+")²?", a*a, "(−"+a+") · (−"+a+") = "+a*a+".");
   });
 
+// Weitere Aufgabenformen mit eigenen Lösungswegen.
+const extraTasks = {
+  place: [
+    n => {
+      const hundreds = 2 + n % 7, ones = 1 + Math.floor(n / 7) % 8;
+      return numberTask("Bilde die Zahl aus " + hundreds + " Hundertern, 4 Zehnern und " + ones + " Einern.",
+        hundreds * 100 + 40 + ones, hundreds + " · 100 + 4 · 10 + " + ones + " ergibt die gesuchte Zahl.");
+    },
+    n => {
+      const base = 1200 + 100 * (n % 8);
+      return numberTask("Auf einem Zahlenstrahl stehen " + base + " und " + (base + 100) + ". Welche Zahl liegt genau in der Mitte?",
+        base + 50, "Die Hälfte des Abstands 100 ist 50. Addiere 50 zur kleineren Zahl.");
+    }
+  ],
+  add: [
+    n => {
+      const a = 36 + n * 3, b = 25 + n;
+      return numberTask("Ergänze: " + a + " + ? = " + (a + b), b,
+        "Die fehlende Zahl ist " + (a + b) + " − " + a + " = " + b + ".");
+    },
+    n => {
+      const a = 150 + n * 7, b = 30 + n, c = 12 + n % 9;
+      return numberTask("In einer Bücherei stehen " + a + " Bücher. " + b + " werden ausgeliehen, " + c + " zurückgegeben. Wie viele stehen danach dort?",
+        a - b + c, a + " − " + b + " + " + c + " = " + (a - b + c) + ".");
+    }
+  ],
+  multiply: [
+    n => {
+      const a = 3 + n % 7, b = 4 + Math.floor(n / 7) % 6;
+      return numberTask("Ergänze den fehlenden Faktor: ? · " + a + " = " + (a * b), b,
+        "Teile das Produkt durch den bekannten Faktor: " + (a * b) + " : " + a + " = " + b + ".");
+    },
+    n => {
+      const a = 4 + n % 8, b = 3 + Math.floor(n / 8) % 5;
+      return numberTask("Für eine Feier stehen " + a + " Reihen mit jeweils " + b + " Stühlen bereit. 2 Stühle bleiben frei. Wie viele sind besetzt?",
+        a * b - 2, a + " · " + b + " − 2 = " + (a * b - 2) + ".");
+    }
+  ],
+  units: [
+    n => {
+      const kg = 2 + n % 7, grams = 50 * (1 + Math.floor(n / 7) % 8);
+      return numberTask(kg + " kg und " + grams + " g sind zusammen wie viele Gramm?", kg * 1000 + grams,
+        "1 kg = 1000 g. Also " + kg + " · 1000 + " + grams + " = " + (kg * 1000 + grams) + ".", "g");
+    },
+    n => {
+      const hours = 1 + n % 5, minutes = 5 * (1 + Math.floor(n / 5) % 10);
+      return numberTask("Ein Film dauert " + (hours * 60 + minutes) + " Minuten. Das sind " + hours + " volle Stunden und wie viele Minuten?",
+        minutes, "Ziehe " + hours + " · 60 Minuten ab. Es bleiben " + minutes + " Minuten.", "Minuten");
+    }
+  ],
+  shape: [
+    n => {
+      const side = 3 + n % 20;
+      return numberTask("Ein quadratischer Rahmen hat einen Umfang von " + side * 4 + " cm. Wie lang ist eine Seite?",
+        side, "Ein Quadrat hat vier gleich lange Seiten. " + side * 4 + " : 4 = " + side + ".", "cm");
+    },
+    n => {
+      const a = 6 + n % 10, b = 2 + Math.floor(n / 10) % 5;
+      return numberTask("Ein Rechteck hat den Umfang " + (2 * (a + b)) + " cm und die Länge " + a + " cm. Wie breit ist es?",
+        b, "Halbiere den Umfang und ziehe die Länge ab: " + (a + b) + " − " + a + " = " + b + ".", "cm");
+    }
+  ],
+  data: [
+    n => {
+      const a = 11 + n, b = 7 + n % 10, c = 8 + n % 7;
+      return numberTask("Erfundene Ausleihe: Montag " + a + ", Dienstag " + b + ", Mittwoch " + c + " Bücher. Wie viele wurden am Dienstag und Mittwoch zusammen ausgeliehen?",
+        b + c, "Für diese Frage zählt der Montag nicht mit. " + b + " + " + c + " = " + (b + c) + ".");
+    },
+    n => {
+      const a = 10 + n % 20, b = a + 5, c = a + 2;
+      return numberTask("Drei Gruppen sammeln " + a + ", " + b + " und " + c + " Punkte. Wie viele Punkte hat die Gruppe mit den meisten Punkten?",
+        b, "Vergleiche alle drei Angaben. Die größte Zahl ist " + b + ".");
+    }
+  ],
+  order: [
+    n => {
+      const a = 2 + n % 8, b = 3 + Math.floor(n / 8) % 5;
+      return numberTask(a + " · (" + b + " + 2) − 4 = ?", a * (b + 2) - 4,
+        "Klammer: " + (b + 2) + ". Dann multiplizieren, zuletzt 4 abziehen.");
+    },
+    n => {
+      const a = 3 + n % 8;
+      return choiceTask("Warum gilt " + a + " + 2 · 5 = " + (a + 10) + "?",
+        ["Weil man immer von links nach rechts rechnet.", "Weil zuerst 2 · 5 berechnet wird.", "Weil Addition vor Multiplikation kommt."],
+        1, "Multiplikation hat Vorrang vor Addition. Erst 2 · 5 = 10, dann " + a + " addieren.");
+    }
+  ],
+  fraction: [
+    n => {
+      const denominator = 3 + n % 10, numerator = 1 + Math.floor(n / 10) % 2;
+      return numberTask("Schreibe " + (numerator * 3) + "/" + (denominator * 3) + " als Bruch mit dem Nenner " + denominator + ". Welcher Zähler gehört dazu?",
+        numerator, "Zähler und Nenner werden durch 3 geteilt. Der Zähler wird " + numerator + ".");
+    },
+    n => {
+      const denominator = 4 + n % 10, taken = 1 + Math.floor(n / 10) % 3;
+      return numberTask("Eine Pizza wird in " + denominator + " gleich große Stücke geteilt. " + taken + " werden gegessen. Welcher Anteil bleibt?",
+        (denominator - taken) / denominator, "Es bleiben " + (denominator - taken) + " von " + denominator + " Stücken, also " + (denominator - taken) + "/" + denominator + ".");
+    }
+  ],
+  decimal: [
+    n => {
+      const a = 12 + n % 50;
+      return numberTask("Wie viel ist " + format(a / 10) + " · 10?", a,
+        "Jeder Stellenwert wird zehnmal so groß. Das Ergebnis ist " + a + ".");
+    },
+    n => {
+      const euros = 4 + n % 8, cents = 15 + 5 * (Math.floor(n / 8) % 8);
+      return numberTask("Du bezahlst " + format(euros + cents / 100) + " € mit 20 €. Wie viel Geld bekommst du zurück?",
+        20 - euros - cents / 100, "20,00 − " + format(euros + cents / 100) + " = " + format(20 - euros - cents / 100) + ".", "€");
+    }
+  ],
+  area: [
+    n => {
+      const a = 4 + n % 9, b = 2 + Math.floor(n / 9) % 6;
+      return numberTask("Ein Rechteck hat " + a * b + " cm² Fläche und ist " + a + " cm lang. Wie breit ist es?",
+        b, "Fläche durch Länge: " + a * b + " : " + a + " = " + b + ".", "cm");
+    },
+    n => {
+      const a = 2 + n % 8;
+      return numberTask("Ein Würfel hat Kanten von " + a + " cm. Wie groß ist sein Volumen?",
+        a ** 3, a + " · " + a + " · " + a + " = " + a ** 3 + ".", "cm³");
+    }
+  ],
+  coordinates: [
+    n => {
+      const x = 2 + n % 9, y = 1 + Math.floor(n / 9) % 5, move = 3;
+      return numberTask("P(" + x + " | " + y + ") wird 3 Einheiten nach rechts verschoben. Wie lautet die neue x-Koordinate?",
+        x + move, "Bei einer Verschiebung nach rechts wächst x: " + x + " + 3 = " + (x + move) + ". y bleibt gleich.");
+    },
+    n => {
+      const x = 1 + n % 7, y = 2 + Math.floor(n / 7) % 8;
+      return numberTask("P(" + x + " | " + y + ") wird 4 Einheiten nach oben verschoben. Wie lautet die neue y-Koordinate?",
+        y + 4, "Die senkrechte Bewegung verändert y: " + y + " + 4 = " + (y + 4) + ".");
+    }
+  ],
+  fractionOps: [
+    n => {
+      const d = 4 + n % 10;
+      return numberTask("3/" + d + " − 1/" + d + " = ?", 2 / d,
+        "Die Teile sind gleich groß. Subtrahiere die Zähler: (3 − 1)/" + d + " = 2/" + d + ".");
+    },
+    n => {
+      const d = 3 + n % 10, amount = 2 + Math.floor(n / 10) % 4;
+      return numberTask("Eine Flasche enthält " + amount + " Liter Saft. Ein Glas fasst 1/" + d + " Liter. Wie viele Gläser lassen sich füllen?",
+        amount * d, amount + " : (1/" + d + ") = " + amount + " · " + d + " = " + amount * d + ".");
+    }
+  ],
+  negative: [
+    n => {
+      const a = 2 + n % 10, b = 3 + Math.floor(n / 10) % 6;
+      return numberTask("−" + a + " − (−" + b + ") = ?", b - a,
+        "Eine negative Zahl abzuziehen bedeutet, ihre positive Gegenzahl zu addieren: −" + a + " + " + b + " = " + (b - a) + ".");
+    },
+    n => {
+      const a = 3 + n % 9, b = 2 + Math.floor(n / 9) % 5;
+      return numberTask("(−" + a * b + ") : " + b + " = ?", -a,
+        "Negativ geteilt durch positiv ergibt negativ. " + a * b + " : " + b + " = " + a + ", daher −" + a + ".");
+    }
+  ],
+  ratio: [
+    n => {
+      const people = 3 + n % 7, grams = 50 * (2 + Math.floor(n / 7) % 5);
+      return numberTask("Für " + people + " Personen braucht ein Rezept " + people * grams + " g Reis. Wie viel braucht man für 2 Personen bei gleicher Portion?",
+        2 * grams, "Pro Person: " + people * grams + " : " + people + " = " + grams + " g. Für zwei Personen verdoppeln.", "g");
+    },
+    n => {
+      const price = 2 + n % 9, count = 3 + Math.floor(n / 9) % 5;
+      return numberTask("Ein Meter Band kostet " + price + " €. Wie viele Meter erhältst du für " + price * count + " €?",
+        count, "Geldbetrag durch Preis je Meter: " + price * count + " : " + price + " = " + count + ".", "m");
+    }
+  ],
+  percent: [
+    n => {
+      const percent = [10,20,25,50,75][n % 5], whole = 20 * (3 + Math.floor(n / 5) % 8);
+      return numberTask("Wie viel sind " + percent + " % von " + whole + "?", whole * percent / 100,
+        whole + " : 100 · " + percent + " = " + format(whole * percent / 100) + ".");
+    },
+    n => {
+      const denominator = [2,4,5,10][n % 4], whole = denominator * (4 + Math.floor(n / 4) % 8), part = whole / denominator;
+      return numberTask("Von " + whole + " Feldern sind " + part + " gefärbt. Wie viel Prozent sind das?",
+        100 / denominator, part + "/" + whole + " = 1/" + denominator + ". Mit 100 multipliziert ergibt das " + (100 / denominator) + " %.", "%");
+    }
+  ],
+  angles: [
+    n => {
+      const angle = 20 + 5 * (n % 25);
+      return choiceTask("Wie heißt ein Winkel von " + angle + "°?",
+        ["Spitzer Winkel", "Rechter Winkel", "Stumpfer Winkel"],
+        angle < 90 ? 0 : angle === 90 ? 1 : 2,
+        "Unter 90° heißt spitz, genau 90° recht, zwischen 90° und 180° stumpf.");
+    },
+    n => {
+      const angle = 95 + 5 * (n % 16);
+      return numberTask("Ein Winkel ist " + angle + "° groß. Wie viele Grad fehlen zum gestreckten Winkel?",
+        180 - angle, "Ein gestreckter Winkel hat 180°. 180 − " + angle + " = " + (180 - angle) + ".", "°");
+    }
+  ],
+  statistics: [
+    n => {
+      const a = 2 + n % 15, sum = 4 * (a + 3);
+      return numberTask("Vier Messwerte haben zusammen den Wert " + sum + ". Wie groß ist ihr Mittelwert?",
+        sum / 4, "Summe durch Anzahl: " + sum + " : 4 = " + sum / 4 + ".");
+    },
+    n => {
+      const a = 3 + n % 15, b = a + 2, c = a + 7;
+      return numberTask("Die Werte sind " + c + ", " + a + " und " + b + ". Wie groß ist der Median?",
+        b, "Sortiere: " + a + ", " + b + ", " + c + ". Der mittlere Wert ist " + b + ".");
+    }
+  ],
+  terms: [
+    n => {
+      const a = 3 + n % 9, b = 2 + Math.floor(n / 9) % 5;
+      return numberTask("Ergänze: " + (a + b) + "x − " + b + "x = ? · x", a,
+        "Gleichartige Terme zusammenfassen: " + (a + b) + " − " + b + " = " + a + ".");
+    },
+    n => {
+      const price = 2 + n % 9, count = 3 + Math.floor(n / 9) % 6;
+      return numberTask("Eine Bestellung kostet " + price + " € pro Heft plus 4 € Versand. Berechne " + price + "x + 4 für " + count + " Hefte.",
+        price * count + 4, price + " · " + count + " + 4 = " + (price * count + 4) + ".", "€");
+    }
+  ],
+  equations: [
+    n => {
+      const x = 3 + n % 12, a = 2 + Math.floor(n / 12) % 4, b = 7;
+      return numberTask("Löse " + a + "x − " + b + " = " + (a * x - b) + ". Wie groß ist x?",
+        x, "Addiere auf beiden Seiten " + b + ", dann teile durch " + a + ". x = " + x + ".");
+    },
+    n => {
+      const x = 2 + n % 12, b = 3 + Math.floor(n / 12) % 5;
+      return numberTask("Löse x/" + b + " = " + x + ". Wie groß ist x?", x * b,
+        "Multipliziere beide Seiten mit " + b + ": x = " + x + " · " + b + " = " + x * b + ".");
+    }
+  ],
+  triangles: [
+    n => {
+      const a = 25 + 5 * (n % 10), b = 35 + 5 * (Math.floor(n / 10) % 5);
+      return numberTask("Ein Dreieck hat zwei Innenwinkel von " + a + "° und " + b + "°. Wie groß ist der dritte?",
+        180 - a - b, "180 − " + a + " − " + b + " = " + (180 - a - b) + ".", "°");
+    },
+    n => {
+      const base = 4 + n % 10, height = 2 + Math.floor(n / 10) % 7;
+      return numberTask("Eine Dreiecksfläche beträgt " + base * height / 2 + " cm². Die Grundseite ist " + base + " cm lang. Wie hoch ist das Dreieck zu dieser Grundseite?",
+        height, "Aus A = g · h / 2 folgt h = 2 · A / g = " + height + ".", "cm");
+    }
+  ],
+  probability: [
+    n => {
+      const win = 2 + n % 7, total = 10 + n % 7 + Math.floor(n / 7) % 5;
+      return numberTask("Ein Glücksrad hat " + total + " gleich große Felder. " + win + " sind Gewinnfelder. Wie groß ist die Gewinnwahrscheinlichkeit?",
+        win / total, win + " günstige von " + total + " gleich wahrscheinlichen Feldern: " + win + "/" + total + ".");
+    },
+    n => {
+      const total = 6 + n % 14, red = 1 + Math.floor(n / 14) % 4;
+      return numberTask("Ein Beutel enthält " + red + " rote und " + (total - red) + " blaue gleichartige Kugeln. Wie groß ist die Wahrscheinlichkeit, keine rote Kugel zu ziehen?",
+        (total - red) / total, "Nicht rot bedeutet hier blau. " + (total - red) + " von " + total + " Kugeln sind blau.");
+    }
+  ],
+  expand: [
+    n => {
+      const a = 2 + n % 9, b = 2 + Math.floor(n / 9) % 6;
+      return numberTask("Ergänze die Zahl: " + a + "(x − " + b + ") = " + a + "x − ?", a * b,
+        "Multipliziere auch den zweiten Summanden: " + a + " · " + b + " = " + a * b + ".");
+    },
+    n => {
+      const a = 2 + n % 9, b = 2 + Math.floor(n / 9) % 6;
+      return numberTask("Klammere " + a + " aus: " + a + "x + " + a * b + " = " + a + "(x + ?). Welche Zahl fehlt?",
+        b, "Teile beide Summanden durch den ausgeklammerten Faktor. " + a * b + " : " + a + " = " + b + ".");
+    }
+  ],
+  linear: [
+    n => {
+      const m = 2 + n % 7, b = 1 + Math.floor(n / 7) % 8;
+      return numberTask("Die Funktion lautet y = " + m + "x + " + b + ". Welchen y-Wert hat sie bei x = 0?",
+        b, "Setze x = 0 ein. Der Term " + m + " · 0 fällt weg. Übrig bleibt " + b + ".");
+    },
+    n => {
+      const m = 1 + n % 7, x = 2 + Math.floor(n / 7) % 6;
+      return numberTask("Berechne y für y = −" + m + "x + 5 und x = " + x + ".", 5 - m * x,
+        "−" + m + " · " + x + " + 5 = " + (5 - m * x) + ".");
+    }
+  ],
+  roots: [
+    n => {
+      const a = 2 + n % 15, b = 1 + Math.floor(n / 15) % 4;
+      return numberTask("√" + a * a + " + " + b + " = ?", a + b,
+        "Zuerst die Wurzel: √" + a * a + " = " + a + ". Danach " + b + " addieren.");
+    },
+    n => {
+      const a = 2 + n % 15;
+      return numberTask("Ein Quadrat hat die Fläche " + a * a + " cm². Wie lang ist eine Seite?",
+        a, "Die Seitenlänge ist die Quadratwurzel der Fläche: √" + a * a + " = " + a + ".", "cm");
+    }
+  ]
+};
+
+const taskPools = {};
+const usedTasks = {};
+
+function taskKey(task) {
+  return JSON.stringify([task.text, task.options || [], task.answer]);
+}
+
+Object.values(skills).forEach(skill => {
+  const originalTask = skill.task;
+  skill.task = n => {
+    const type = n % 4;
+    const variant = Math.floor(n / 4);
+    return type < 2
+      ? originalTask(variant * 2 + type)
+      : extraTasks[skill.id][type - 2](variant);
+  };
+  const unique = new Map();
+  for (let n = 0; n < 200; n++) {
+    const task = {...skill.task(n), type: n % 4};
+    unique.set(taskKey(task), task);
+  }
+  taskPools[skill.id] = [...unique.values()];
+  usedTasks[skill.id] = new Set();
+});
+
+function drawTasks(id, count) {
+  const picked = [];
+  const types = new Set();
+  while (picked.length < count) {
+    let available = taskPools[id].filter(task => !usedTasks[id].has(taskKey(task)));
+    if (!available.length) {
+      // Erst nach Ausschöpfen des Pools beginnt ein neuer Zyklus.
+      usedTasks[id].clear();
+      picked.forEach(task => usedTasks[id].add(taskKey(task)));
+      available = taskPools[id].filter(task => !usedTasks[id].has(taskKey(task)));
+    }
+    const different = available.filter(task => !types.has(task.type));
+    const candidates = different.length ? different : available;
+    const selected = candidates[Math.floor(Math.random() * candidates.length)];
+    usedTasks[id].add(taskKey(selected));
+    types.add(selected.type);
+    picked.push({...selected});
+  }
+  return picked;
+}
+
 const gradeSkills = {
   5: ["place","add","multiply","units","shape","data"],
   6: ["multiply","order","fraction","decimal","area","coordinates"],
@@ -322,9 +662,8 @@ let grade = 5;
 let screen = "home";
 let lesson = null;
 let run = null;
-const practiceRounds = {};
 function session() {
-  if (!sessions[grade]) sessions[grade] = {answers: [], position: 0, started: false, done: false, trained: {}};
+  if (!sessions[grade]) sessions[grade] = {answers: [], questions: null, position: 0, started: false, done: false, trained: {}};
   return sessions[grade];
 }
 function el(tag, text, className) {
@@ -356,7 +695,13 @@ function show(next = screen) {
   view.focus();
 }
 function tasks() {
-  return gradeSkills[grade].flatMap(id => [0,1].map(n => ({id, ...skills[id].task(n)})));
+  const s = session();
+  if (!s.questions) {
+    s.questions = gradeSkills[grade].flatMap(id =>
+      drawTasks(id, 2).map(task => ({id, ...task}))
+    );
+  }
+  return s.questions;
 }
 function score(id) {
   const questions = tasks();
@@ -511,7 +856,7 @@ function result() {
   box.append(review);
   const actions = el("div",undefined,"actions");
   actions.append(button("Zur Übersicht",()=>show("home")),button("Check erneut beginnen",()=>{
-    s.answers=[];s.position=0;s.done=false;s.started=true;show("check");
+    s.answers=[];s.questions=null;s.position=0;s.done=false;s.started=true;show("check");
   }));
   box.append(actions);
 }
@@ -520,6 +865,7 @@ function teach() {
   const box = panel(skill.title);
   box.append(el("p",skill.explanation));
   const example = skill.task(2);
+  usedTasks[lesson].add(taskKey(example));
   const answer = example.options ? example.options[example.answer] : format(example.answer)+(example.unit ? " "+example.unit : "");
   box.append(el("h3","Ein Beispiel"),el("p",example.text+"\nLösung: "+answer+"\n"+example.solution,"example"));
   if (skill.prerequisite.length) {
@@ -533,9 +879,7 @@ function teach() {
   }
   const actions = el("div",undefined,"actions");
   actions.append(button("Drei Aufgaben üben",()=>{
-    const round = practiceRounds[lesson] || 0;
-    practiceRounds[lesson]=round+1;
-    run={id:lesson,position:0,correct:0,seed:3+round*3,answered:false};
+    run={id:lesson,position:0,correct:0,questions:drawTasks(lesson,3),answered:false};
     show("practice");
   },"primary"),button("Zur Übersicht",()=>show("home")));
   if(session().done) actions.append(button("Zum Übungsplan",()=>show("result")));
@@ -552,7 +896,7 @@ function practice() {
     if(session().done) box.append(button("Zum Übungsplan",()=>show("result")));
     return;
   }
-  const task = skill.task(run.seed+run.position);
+  const task = run.questions[run.position];
   box.append(el("p","Aufgabe "+(run.position+1)+" von 3","eyebrow"));
   run.answered=false;
   let form;
