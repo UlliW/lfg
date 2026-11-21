@@ -16,7 +16,7 @@ const tools = [
   {
     title: "MINT-Logiktrainer",
     description: "Logik-Challenges aus allen MINT-Fächern",
-    audience: "Klasse 9",
+    audience: "Klassen 5-10",
     subjects: "Mathe, Bio, Chemie, Physik, Informatik, NIT",
     url: "tools/mint-logik-trainer/index.html",
   },
@@ -30,7 +30,7 @@ const tools = [
   {
     title: "Klima-Campus",
     description: "Klimawandel · Lernmodule, Methodenwerkstatt",
-    audience: "Klassen 5-10",
+    audience: "Klassen 9",
     subjects: "Entdeckerschule, fächerübergreifend, Deeper-Learning",
     url: "tools/klima-campus/index.html",
   },
