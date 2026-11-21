@@ -14,6 +14,13 @@ const tools = [
     url: "tools/mathe-grundkompetenzen/index.html",
   },
   {
+    title: "MINT-Logiktrainer",
+    description: "Logik-Challenges aus allen MINT-Fächern",
+    audience: "Klassen 5-10",
+    subjects: "Mathe, Bio, Chemie, Physik, Informatik, NIT",
+    url: "tools/mint-logik-trainer/index.html",
+  },
+  {
     title: "GFS-Prompt-Generator",
     description: "Leitfrage entwickeln · Quellen recherchieren · GFS ausarbeiten",
     audience: "ab Klasse 7",
