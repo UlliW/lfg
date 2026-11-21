@@ -15,17 +15,17 @@ const tools = [
   },
   {
     title: "MINT-Logiktrainer",
-    description: "Allgemeinwissen · mit Lernkarten, Lernlinks, Wissensfragen",
-    audience: "Klassen 5-10",
-    subjects: "Geographie, Biologie, Geschichte, Gemeinschaftskunde, Physik, Chemie",
-    url: "tools/weltwissen-trainer/index.html",
-  },
-  {
-    title: "Weltwissen-Trainer",
     description: "Logik-Challenges aus allen MINT-Fächern",
     audience: "Klassen 5-10",
     subjects: "Mathe, Bio, Chemie, Physik, Informatik, NIT",
     url: "tools/mint-logik-trainer/index.html",
+  },
+  {
+    title: "Weltwissen-Trainer",
+    description: "Allgemeinwissen · mit Lernkarten, Lernlinks, Wissensfragen",
+    audience: "Klassen 5-10",
+    subjects: "Geographie, Biologie, Geschichte, Gemeinschaftskunde, Physik, Chemie",
+    url: "tools/weltwissen-trainer/index.html",
   },
   {
     title: "GFS-Prompt-Generator",
