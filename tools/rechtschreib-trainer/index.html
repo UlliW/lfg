@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>Rechtschreib-Trainer · LFG-Tools</title>
+<style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#172c40;background:#f0f4f8;line-height:1.6;--blue:#254eae;--muted:#465b70;--line:#b6c4d3}
+*{box-sizing:border-box}body{margin:0}main,footer{max-width:1000px;margin:auto;padding:24px}header{padding:12px 0 22px}h1{font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin:10px 0}h2{line-height:1.3;margin:0 0 16px}h3{margin:8px 0}p{margin:10px 0}small,.muted{color:var(--muted)}.eyebrow{font-weight:750;color:var(--blue);letter-spacing:.09em;font-size:.85rem}.pill{display:inline-block;background:#dce8ff;color:#173d8d;border-radius:99px;padding:5px 12px;font-weight:650}.card{background:#fff;border:1px solid #d5dfe9;border-radius:22px;padding:24px;margin-bottom:20px;box-shadow:0 7px 22px #20304b08}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.between{justify-content:space-between}label{display:block;font-weight:650;margin-bottom:5px}select,input,button{font:inherit}select,input{width:100%;min-height:48px;padding:10px;border:1px solid #8195aa;border-radius:10px;background:white;color:inherit}button,.navlink{min-height:48px;padding:10px 18px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#193b73;font-weight:650;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}button:hover,.navlink:hover{background:#edf2ff;border-color:var(--blue)}button.primary{background:var(--blue);color:white;border-color:var(--blue)}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,[tabindex="-1"]:focus-visible{outline:3px solid #9c3c00;outline-offset:4px}fieldset{border:0;padding:0;margin:0;min-width:0}legend{font-weight:700;margin:0 0 12px}.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}.mode{padding:14px;border:2px solid var(--line);border-radius:14px;cursor:pointer}.mode:has(input:checked){border-color:var(--blue);background:#edf2ff}.mode input{width:auto;min-height:0;margin-right:8px}.mode small{display:block;font-weight:400;margin-left:25px}.sentence{font-size:clamp(1.3rem,3vw,1.7rem);line-height:1.7;padding:20px;background:#f3f6fb;border-radius:14px;overflow-wrap:anywhere}.gap{display:inline-block;min-width:4em;border-bottom:3px solid var(--blue);color:var(--blue);text-align:center}.notice{border-left:4px solid var(--blue);padding:12px 16px;background:#edf2ff;border-radius:8px;margin:16px 0;overflow-wrap:anywhere}.notice.error{border-color:#a34a05;background:#fff2e5}.notice.good{border-color:#18734b;background:#e9f7ef}mark{background:#ffe3a0;color:#302400;padding:0 3px;border-radius:3px}progress{width:100%;height:14px;accent-color:var(--blue);margin:12px 0 20px}.answer{max-width:650px;margin:20px 0}.answer input{font-size:1.2rem}details{margin:16px 0}summary{cursor:pointer;font-weight:650;padding:10px 0;min-height:44px}li{margin:6px 0}.step{border-top:1px solid #d5dfe9;padding:12px 0}footer{padding-top:0}footer nav{display:flex;gap:12px;flex-wrap:wrap}a{color:#204caa}button,select,input,a{touch-action:manipulation}[hidden]{display:none!important}.skip{position:absolute;left:12px;top:-100px;background:white;padding:12px;z-index:5}.skip:focus{top:10px}#audioStatus{min-height:1.6em}.actions{margin-top:20px}
+@media(max-width:620px){main,footer{padding:16px}.card{padding:18px;border-radius:16px}.grid,.modes{grid-template-columns:1fr}.row>button{flex:1 1 140px}.sentence{padding:14px}.navlink{width:100%}h1{font-size:2rem}}
+@media(prefers-reduced-motion:no-preference){button{transition:background .15s}}
+</style>
+</head>
+<body>
+<a class="skip" href="#setup">Zum Training</a>
+<main>
+<header><div class="eyebrow">LFG-TOOLS · DEUTSCH</div><h1>Wörter sicher schreiben.</h1><p>Dein Rechtschreib-Trainer: ausprobieren, verstehen und weiterkommen. In deinem Tempo.</p><span class="pill">Ohne Zeitdruck · ohne Anmeldung</span></header>
+<section id="setup" class="card" aria-labelledby="setupTitle">
+<h2 id="setupTitle">Dein Training</h2>
+<div class="grid">
+<div><label for="grade">Deine Klasse</label><select id="grade"><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
+<div><label for="level">Übungsniveau</label><select id="level"><option value="0">Grundlagen · 5/6</option><option value="1">Vertiefung · 7/8</option><option value="2">Transfer · 9/10</option></select></div>
+<div><label for="topic">Bereich</label><select id="topic"><option value="mix">Gemischte Runde</option></select></div>
+</div>
+<p id="levelInfo" class="muted"></p>
+<fieldset><legend>Wie möchtest du üben?</legend><div class="modes">
+<label class="mode"><input type="radio" name="mode" value="screen" checked>Am Bildschirm<small>Lücken füllen, Regeln verstehen, Fehler noch einmal üben.</small></label>
+<label class="mode"><input type="radio" name="mode" value="paper">Diktat auf Papier<small>Satzweise hören, mit Stift schreiben, selbst vergleichen.</small></label>
+</div></fieldset>
+<p id="roundInfo"></p><button id="start" class="primary">Training starten →</button>
+</section>
+<section id="work" class="card" hidden aria-labelledby="workTitle">
+<div class="row between"><span id="badge" class="pill"></span><button id="exit">Zur Auswahl</button></div>
+<h2 id="workTitle" tabindex="-1" style="margin-top:18px"></h2>
+<label for="progress" id="progressText">Fortschritt</label><progress id="progress" value="0" max="3"></progress>
+<div id="screen">
+<p id="instruction"></p><p id="sentence" class="sentence"></p><p id="cue" class="muted"></p>
+<form id="answerForm" novalidate>
+<div class="answer"><label for="answer" id="answerLabel">Deine Schreibweise</label><input id="answer" maxlength="350" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="cue feedback"></div>
+<div class="row"><button id="check" class="primary" type="submit">Prüfen</button><button id="hint" type="button">Regelhilfe</button></div>
+</form><div id="feedback" class="notice" role="status" aria-live="polite" hidden></div>
+<button id="next" class="primary actions" hidden>Weiter →</button>
+</div>
+<div id="paper" hidden>
+<p>Schreibe den ganzen Satz auf dein Blatt. Höre ihn zuerst vollständig, dann in Teilen. Satzzeichen setzt du selbst.</p>
+<div class="grid"><div><label for="voice">Lokale deutsche Stimme</label><select id="voice"></select></div><div><label for="speed">Sprechtempo</label><select id="speed"><option value="0.85">Ruhig</option><option value="0.65">Langsam</option><option value="1">Normal</option></select></div></div>
+<p id="voiceInfo" class="muted"></p>
+<div class="row"><button id="whole" class="primary">▶ Ganzer Satz</button><button id="part">▶ Teil 1</button><button id="again" disabled>Teil wiederholen</button><button id="stop">Stopp</button></div>
+<p id="audioStatus" role="status"></p>
+<details id="partner"><summary>Vorlesevorlage für eine Partnerperson</summary><p>Nur die vorlesende Person schaut hier hinein. An jedem Strich eine Schreibpause machen.</p><p id="partnerText" class="sentence"></p></details>
+<button id="reveal">Ich bin fertig – vergleichen</button>
+<div id="solution" hidden><h3>Lösung</h3><p id="solutionText" class="sentence"></p><p id="paperRule" class="notice"></p><p>Vergleiche Wort für Wort und prüfe auch Großschreibung und Satzzeichen. Markiere Abweichungen und schreibe diese Stellen noch einmal richtig.</p><div class="row"><button id="selfGood" class="primary">Alles richtig →</button><button id="selfPractice">Korrigiert – weiter →</button></div></div>
+</div>
+</section>
+<section id="result" class="card" hidden aria-labelledby="resultTitle"><h2 id="resultTitle" tabindex="-1">Runde geschafft!</h2><p id="resultText"></p><div id="review"></div><p class="notice">Transfer aufs Blatt: Schreibe einen eigenen Satz zu einer geübten Regel. Markiere die passende Stelle und erkläre deine Schreibweise einer Partnerperson.</p><div class="row"><button id="retry" class="primary">Übungsstellen wiederholen</button><button id="newRound">Neue Runde wählen</button></div></section>
+<details class="card"><summary>Für Lehrkräfte · Niveau, Umfang und Datenschutz</summary><p>72 feste Aufgaben: acht Bereiche mit je drei Aufgaben auf drei Niveaus. Gemischte Runden enthalten je eine Aufgabe pro Bereich; Bereichsrunden drei Aufgaben. Es gibt keine automatische Diagnose und keine Noten. Die Klassenwahl empfiehlt ein Niveau; das Niveau kann unabhängig davon geändert werden.</p><p>Orientierung: Bildungsplan Baden-Württemberg, Gymnasium Deutsch, Fassung V3.0, „Struktur von Äußerungen“, 3.1.2.1, 3.2.2.1 und 3.3.2.1. 5/6: Schärfung, Dehnung, s-Laute, Großschreibung, einfache Zeichensetzung und Rechtschreibstrategien. 7/8: zusätzlich Getrennt-/Zusammenschreibung und Fremdwörter, Fehler gezielt bearbeiten. 9/10: schwierigere Fälle, komplexere Satzgefüge, eigenständige Korrektur. Getrenntschreibung und Fremdwörter sind auf Niveau 5/6 ein freiwilliger Ausblick. Das Tool übt eine Auswahl; etwa Zitatregeln werden nicht vollständig abgedeckt.</p><p>Alle Beispiele sind erfunden. Eingaben und Ergebnisse bleiben nur im Arbeitsspeicher dieser Seite; Neuladen löscht sie. Keine externen Bibliotheken, Anfragen, Konten oder Speicherung. Audio nutzt nur deutsche Stimmen, die der Browser als lokal meldet (localService). Ohne solche Stimme gibt es keine automatische Sprachausgabe. Verfügbarkeit und Aussprache hängen vom Gerät ab. Es werden ausschließlich vorgegebene Übungssätze vorgelesen.</p></details>
+<noscript><p class="notice">Bitte aktiviere JavaScript, damit du die Übungen benutzen kannst.</p></noscript>
+</main>
+<footer><nav aria-label="Weitere Seiten"><a class="navlink" href="../../index.html">← Zurück zu LFG-Tools</a><a class="navlink" href="https://lfg-ma.de/impressum-b/">Impressum</a><a class="navlink" href="https://lfg-ma.de/datenschutz/">Datenschutz</a></nav></footer>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const topics=['Groß- und Kleinschreibung','Konsonanten · doppelt, ck, tz','Lange Vokale · Dehnung','s, ss oder ß','das oder dass','Getrennt und zusammen','Fremdwörter & Merkwörter','Kommas setzen'];
+// Format: Niveau ~ Bereich ~ Satz ([Zielstelle], | Sprechpause) ~ Schreibhilfe ~ Erklärung
+const raw=`0~0~Beim [Lesen]|vergisst Mila die Zeit.~LESEN~Beim = bei dem. Das Verb wird hier als Nomen gebraucht: beim Lesen.
+0~0~Wir [spielen]|heute im Hof.~SPIELEN~Hier bezeichnet spielen eine Tätigkeit als Verb: Wir spielen. Deshalb klein.
+0~0~Im Garten entdeckt Ben|etwas [Neues].~NEUES~Nach etwas wird das als Nomen gebrauchte Adjektiv großgeschrieben: etwas Neues.
+0~1~Die Kinder [kommen]|mit dem Bus.~ko(m/mm)en~In kommen folgt auf das kurze betonte o nur ein Konsonantenlaut. Er wird mit mm geschrieben: kom-men.
+0~1~Im Rucksack liegt|eine [Jacke].~Ja(k/ck)e~Nach kurzem betontem a steht hier ck statt kk: Jacke.
+0~1~Auf dem Sofa schläft|eine [Katze].~Ka(z/tz)e~Nach kurzem betontem a steht hier tz statt zz: Katze.
+0~2~Am Himmel ziehen|dunkle [Wolken].~Wolken / Wohlken~Ein h ist kein allgemeines Zeichen für Vokale. Wolken hat ein kurzes o und kein h.
+0~2~Auf der [Wiese]|blühen bunte Blumen.~Wiese / Wise~Das lange i wird in vielen deutschen Wörtern mit ie geschrieben: Wiese.
+0~2~Wir [fahren]|mit dem Fahrrad.~faren / fahren~Das Dehnungs-h in fahren ist ein Merkmal der Wortfamilie: fahren, Fahrrad, Fahrt.
+0~3~Wir spielen|an der [Straße].~Strase / Strasse / Straße~Das a ist lang; der stimmlose s-Laut wird hier mit ß geschrieben: Straße.
+0~3~Mila füllt die Flasche|mit [Wasser].~Waser / Wasser~Nach kurzem betontem a wird der stimmlose s-Laut hier mit ss geschrieben: Wasser.
+0~3~Vor der Tür sitzt|ein [Hase].~Hase / Hasse~In Hase hörst du ein stimmhaftes s. Es wird mit einfachem s geschrieben.
+0~4~Ich hoffe,|[dass] du kommst.~das / dass~Dass leitet hier einen Nebensatz ein. Du kannst es nicht durch dieses, jenes oder welches ersetzen.
+0~4~Wir öffnen [das] Fenster|am Morgen.~das / dass~Das begleitet das Nomen Fenster als Artikel: dieses Fenster.
+0~4~Das Buch,|[das] dort liegt,|gehört mir.~das / dass~Das ist ein Relativpronomen und bezieht sich auf Buch. Probe: welches dort liegt.
+0~5~Wir wollen heute|[Rad fahren].~Rad fahren / radfahren~Das Nomen Rad bleibt groß und steht getrennt vom Verb fahren.
+0~5~Mila möchte|[schwimmen lernen].~schwimmen lernen / schwimmenlernen~Zwei Verben werden in dieser Verbindung getrennt geschrieben: schwimmen lernen.
+0~5~Nach dem Essen müssen wir|[aufräumen].~auf räumen / aufräumen~Die Verbpartikel auf gehört im Infinitiv zum Verb: aufräumen.
+0~6~Am Nachmittag essen wir|eine [Pizza].~Pizza / Piza~Pizza ist ein Merkwort italienischer Herkunft. Präge dir die Schreibung mit zz ein.
+0~6~Die Klasse besucht|das [Theater].~Theater / Teater~Theater schreibt man mit Th. Diese Schreibung musst du dir merken.
+0~6~Im [Zoo]|lebt ein alter Elefant.~Zoo / Zo~Zoo ist ein Merkwort mit zwei o. Sprich das Wort und merke dir sein Schriftbild.
+0~7~[Mila packt Hefte,|Stifte und Bücher ein.]~~Ein Komma trennt Teile einer Aufzählung. Vor und steht hier kein Komma.
+0~7~[Ben bleibt drinnen,|weil es regnet.]~~Der Nebensatz mit weil wird durch ein Komma vom Hauptsatz getrennt.
+0~7~[Mila,|komm bitte her!]~~Die direkte Anrede Mila wird mit einem Komma abgetrennt.
+1~0~Beim Experimentieren|entdecken wir viel [Interessantes].~INTERESSANTES~Interessantes wird hier als Nomen gebraucht. Viel ist ein Hinweis auf diese nominale Verwendung.
+1~0~Wir treffen uns|heute [Abend].~ABEND~Abend ist in heute Abend ein Nomen und wird großgeschrieben.
+1~0~Im Training läuft Jona|am [schnellsten].~SCHNELLSTEN~Am schnellsten ist die Steigerungsform eines Adjektivs. Frage: Wie läuft Jona? Kleinschreibung.
+1~1~Die Gruppe muss|den Versuch [stoppen].~sto(p/pp)en~Auf das kurze betonte o folgt ein einzelner Konsonantenlaut: stoppen mit pp.
+1~1~Wir [nutzen]|für die Recherche ein Lexikon.~nu(z/tz)en~Nach dem kurzen betonten u steht hier tz: nutzen.
+1~1~Der Bericht beschreibt|die [Entdeckung].~Entdekung / Entdeckung~Entdeckung gehört zu entdecken. Das ck bleibt in der Wortfamilie erhalten.
+1~2~Für den Versuch brauchen wir|eine [Waage].~Wage / Waage~Das Messgerät heißt Waage mit aa. Unterscheide: Ich wage einen Versuch.
+1~2~Die Gruppe will den Versuch|[wiederholen].~wiederholen / widerholen~Wieder bedeutet hier noch einmal. Deshalb schreibt man wiederholen mit ie.
+1~2~Wir können das Material|für eine Woche [leihen].~leien / leihen~Das h in leihen steht zwischen Vokalen und trennt die Silben: lei-hen.
+1~3~Der Versuch gelingt|[schließlich] doch.~schlieslich / schliesslich / schließlich~Die Buchstaben ie stehen hier für ein langes i. Der stimmlose s-Laut wird mit ß geschrieben: schließlich.
+1~3~Der [Fluss]|führt heute wenig Wasser.~Flus / Fluss / Fluß~Nach dem kurzen betonten u steht ss: Fluss.
+1~3~Wir [reisen]|mit dem Zug zur Ausstellung.~reisen / reissen / reißen~Reisen bedeutet unterwegs sein und hat einen stimmhaften s-Laut. Reißen hat eine andere Bedeutung.
+1~4~Das Ergebnis zeigt,|[dass] die Vermutung stimmt.~das / dass~Dass verbindet den Hauptsatz mit einem inhaltlich ergänzenden Nebensatz. Die Ersatzprobe mit welches funktioniert nicht.
+1~4~Das Gerät,|[das] wir gebaut haben,|funktioniert.~das / dass~Das bezieht sich auf Gerät und lässt sich durch welches ersetzen: Relativpronomen.
+1~4~Ich finde [das]|wirklich überzeugend.~das / dass~Das ist hier ein Demonstrativpronomen. Probe: Ich finde dies wirklich überzeugend.
+1~5~Im Bus möchte Mila|[Musik hören].~Musik hören / musikhören~Das Nomen Musik wird großgeschrieben und steht getrennt vom Verb hören.
+1~5~Wir müssen heute|[zusammenarbeiten].~zusammen arbeiten / zusammenarbeiten~Gemeint ist kooperieren. In dieser Bedeutung wird zusammenarbeiten zusammengeschrieben.
+1~5~Vor dem Versuch sollst du|das Kabel [festhalten].~fest halten / festhalten~Hier bildet fest mit halten ein Verb: das Kabel festhalten, damit es nicht verrutscht.
+1~6~Für den Podcast führen wir|ein [Interview].~Interview / Interwiew~Interview ist ein Fremdwort aus dem Englischen. Merke dir die Buchstabenfolge view.
+1~6~In der Gruppe beginnt|eine [Diskussion].~Diskusion / Diskussion~Diskussion schreibt man mit ss. Zerlege das Wort beim Einprägen: Dis-kus-si-on.
+1~6~Wir führen im Labor|ein [Experiment] durch.~Experiment / Experiement~Experiment wird nach dem r mit einfachem i geschrieben. Das Schriftbild ist ein Merkmuster.
+1~7~[Wir üben,|um sicherer zu schreiben.]~~Die mit um eingeleitete Infinitivgruppe wird durch ein Komma abgetrennt.
+1~7~[Jona,|unser Klassensprecher,|stellt den Plan vor.]~~Unser Klassensprecher ist eine nachgestellte Apposition. Sie wird durch zwei Kommas eingerahmt.
+1~7~[Obwohl es regnet,|beginnt das Turnier pünktlich.]~~Der vorangestellte Nebensatz endet vor dem Hauptsatz. An dieser Grenze steht ein Komma.
+2~0~Die Jury lässt|die [Einzelnen] zu Wort kommen.~EINZELNEN~Einzelnen bezeichnet hier Personen und wird als Nomen gebraucht: die Einzelnen.
+2~0~Die Auswertung zeigt|im [Wesentlichen] dasselbe Ergebnis.~WESENTLICHEN~Im = in dem. Wesentlichen ist in dieser festen Wendung nominal gebraucht und wird großgeschrieben.
+2~0~Die Teams sollen|[möglichst] unabhängig urteilen.~MÖGLICHST~Möglichst ist ein Adverb und wird im Satzinneren kleingeschrieben.
+2~1~Die Darstellung enthält|einen [Irrtum].~Irtum / Irrtum~Irrtum gehört zur Wortfamilie irren. Das doppelte r bleibt erhalten.
+2~1~Für den Austausch ist|eine [Schnittstelle] nötig.~Schnitstelle / Schnittstelle~Schnittstelle besteht aus Schnitt und Stelle. Das tt von Schnitt bleibt erhalten.
+2~1~Die Gruppe entwickelt|ein neues [Konzept].~Konzept / Kontzept~Nach n steht kein tz. Konzept ist ein Fremdwort mit z.
+2~2~Die Aussage erzeugt|einen [Widerspruch].~Widerspruch / Wiederspruch~Wider bedeutet gegen: Widerspruch. Wieder mit ie bedeutet erneut.
+2~2~Wir müssen|die Unterschiede [wahrnehmen].~warnehmen / wahrnehmen~Wahrnehmen schreibt man mit h. Merke dir die Wortfamilie: wahrnehmen, Wahrnehmung.
+2~2~Wir müssen|die Ergebnisse [wiedergeben].~widergeben / wiedergeben~Wiedergeben bedeutet hier reproduzieren oder darstellen. Das Wort schreibt man mit wieder-.
+2~3~Für das Projekt ist|[Gewissheit] wichtig.~Gewisheit / Gewissheit / Gewißheit~Gewissheit gehört zu gewiss. Das kurze betonte i führt hier zur Schreibung mit ss.
+2~3~Die Quellen werden|[außerdem] verglichen.~auserdem / ausserdem / außerdem~Nach dem Doppellaut au steht für diesen stimmlosen s-Laut ß: außerdem.
+2~3~Die Analyse muss|[präzise] sein.~präzise / präzisse~Präzise hat an dieser Stelle einen stimmhaften s-Laut und wird mit einfachem s geschrieben.
+2~4~Dass [das] überzeugt,|überrascht die Jury.~das / dass~Das zweite Wort ist ein Demonstrativpronomen: Dass dies überzeugt. Deshalb nur ein s.
+2~4~Das Team erklärt,|[dass] das Modell Grenzen hat.~das / dass~Dass leitet den Nebensatz ein; das vor Modell ist dagegen ein Artikel.
+2~4~Das Argument,|auf [das] sie sich bezieht,|ist überprüfbar.~das / dass~Nach auf steht ein Relativpronomen mit Bezug auf Argument. Probe: auf welches.
+2~5~Die Quelle soll|die Darstellung [richtigstellen].~richtig stellen / richtigstellen~Richtigstellen bedeutet berichtigen. In dieser übertragenen Bedeutung schreibt man zusammen.
+2~5~Trotz der Ablenkung muss sie|[konzentriert arbeiten].~konzentriert arbeiten / konzentriertarbeiten~Konzentriert beschreibt hier, wie sie arbeitet. Adjektiv und Verb bleiben getrennt.
+2~5~Die Gruppe möchte|ihre Ergebnisse [preisgeben].~Preis geben / preisgeben~Preisgeben ist ein zusammengesetztes Verb mit der Bedeutung offenlegen.
+2~6~Die Untersuchung benötigt|einen klaren [Rhythmus].~Rhythmus / Rythmus~Rhythmus schreibt man mit Rh am Anfang und th im Wortinneren. Präge dir beide Stellen ein.
+2~6~Das Team prüft|die [Authentizität] der Quelle.~Authentizität / Authentizietät~Authentizität schreibt man mit th und der Endung -ität, ohne zusätzliches e.
+2~6~Eine [Hypothese]|muss überprüfbar sein.~Hypothese / Hypotese~Hypothese hat ein y und die Buchstabenfolge th. Nutze diese beiden Stellen als Merkhilfe.
+2~7~[Die Quelle,|die wir geprüft haben,|ist verlässlich.]~~Der eingeschobene Relativsatz wird auf beiden Seiten durch Kommas begrenzt.
+2~7~[Die Gruppe plant,|die Daten zu prüfen,|bevor sie urteilt.]~~Die erweiterte Infinitivgruppe wird abgetrennt. Vor dem Nebensatz mit bevor steht ebenfalls ein Komma.
+2~7~[Wer Quellen vergleicht,|erkennt,|dass Aussagen voneinander abweichen.]~~Der erste Nebensatz endet vor erkennt; der zweite beginnt mit dass. Beide Satzgrenzen erhalten ein Komma.`;
+const data=raw.split('\n').map((line,id)=>{const [level,topic,marked,cue,rule]=line.split('~');const clean=marked.replaceAll('|',' ');return {id,level:+level,topic:+topic,marked:clean,parts:marked.replace(/[\[\]]/g,'').split('|'),answer:clean.match(/\[(.*?)\]/)[1],cue,rule};});
+topics.forEach((name,i)=>$('topic').add(new Option(name,String(i))));
+let queue=[],pos=0,first=0,missed=[],helped=false,failed=false,locked=false,mode='screen',roundLevel=0;
+let voices=[],partIndex=0,lastPart=-1,speechToken=0,currentSpeech=null;
+const synth=window.speechSynthesis;
+function show(id,yes){$(id).hidden=!yes;}
+function info(){const n=+$('level').value;$('levelInfo').textContent=['Kurze Sätze, konkrete Regeln und erste Schreibstrategien.','Längere Sätze, Wortfamilien und begründete Schreibentscheidungen.','Anspruchsvollere Wörter, komplexere Sätze und bewusste Fehlerkorrektur.'][n];$('roundInfo').textContent=$('topic').value==='mix'?'8 Aufgaben · ein Beispiel aus jedem Bereich':'3 Aufgaben · gezielt einen Bereich üben';}
+$('grade').onchange=()=>{$('level').value=String(Math.floor((+$('grade').value-5)/2));info();};
+$('level').onchange=info;$('topic').onchange=info;info();
+function shuffled(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function stopSpeech(){speechToken++;if(synth)synth.cancel();currentSpeech=null;$('audioStatus').textContent='';}
+function home(){stopSpeech();show('setup',true);show('work',false);show('result',false);$('start').focus();}
+function begin(items){stopSpeech();queue=[...items];pos=0;first=0;missed=[];show('setup',false);show('result',false);show('work',true);render();}
+$('start').onclick=()=>{roundLevel=+$('level').value;mode=document.querySelector('input[name="mode"]:checked').value;let pool=data.filter(q=>q.level===roundLevel);const topic=$('topic').value;begin(topic==='mix'?shuffled(topics.map((_,t)=>shuffled(pool.filter(q=>q.topic===t))[0])):shuffled(pool.filter(q=>q.topic===+topic)));};
+$('exit').onclick=home;$('newRound').onclick=home;
+function markedText(el,q){el.replaceChildren();const [before,rest]=q.marked.split('[');const [target,after]=rest.split(']');const mark=document.createElement('mark');mark.textContent=target;el.append(before,mark,after);}
+function feedback(text,kind=''){show('feedback',true);$('feedback').className='notice '+kind;$('feedback').textContent=text;}
+function render(){stopSpeech();const q=queue[pos];failed=false;helped=false;locked=false;partIndex=0;lastPart=-1;$('partner').open=false;show('solution',false);show('reveal',true);show('feedback',false);show('next',false);$('answer').value='';$('answer').disabled=false;$('check').disabled=false;$('hint').disabled=false;$('answer').removeAttribute('aria-invalid');$('check').textContent='Prüfen';$('badge').textContent=topics[q.topic];$('workTitle').textContent=(mode==='screen'?'Schreibwerkstatt':'Papier-Diktat')+' · '+['5/6','7/8','9/10'][roundLevel];$('progressText').textContent=`${mode==='screen'?'Aufgabe':'Satz'} ${pos+1} von ${queue.length}`;$('progress').max=queue.length;$('progress').value=pos;show('screen',mode==='screen');show('paper',mode==='paper');
+if(mode==='screen'){const commas=q.topic===7;$('instruction').textContent=commas?'Schreibe den ganzen Satz mit den fehlenden Kommas.':'Lies den Satz. Schreibe die passende Form in die Lücke.';$('sentence').replaceChildren();if(commas){$('sentence').textContent=q.answer.replaceAll(',','');}else{const span=document.createElement('span');span.className='gap';span.textContent='…';const [before,after]=q.marked.split(/\[.*?\]/);$('sentence').append(before,span,after);}$('cue').textContent=commas?'Behalte alle Wörter und die übrigen Satzzeichen bei.':'Schreibhilfe: '+q.cue;$('answerLabel').textContent=commas?'Dein vollständiger Satz':'Deine Schreibweise';}else{$('partnerText').textContent=q.parts.join(' | ');markedText($('solutionText'),q);$('paperRule').textContent=q.rule;updateAudio();}$('workTitle').focus();}
+function norm(s){return s.normalize('NFC').trim().replace(/\s+/g,' ').replace(/\s+([,.!?;:])/g,'$1').replace(/,\s*/g,', ');}
+$('answerForm').onsubmit=e=>{e.preventDefault();if(locked)return;const input=$('answer').value;if(!input.trim()){feedback('Schreibe zuerst deine Antwort ins Feld.','error');$('answer').setAttribute('aria-invalid','true');$('answer').focus();return;}const q=queue[pos];if(norm(input)===norm(q.answer)){locked=true;if(!failed&&!helped)first++;else if(!missed.includes(q))missed.push(q);$('answer').removeAttribute('aria-invalid');feedback((failed?'✓ Korrigiert! ':helped?'✓ Mit Hilfe gelöst! ':'✓ Richtig! ')+q.rule,'good');$('check').disabled=true;$('hint').disabled=true;$('answer').disabled=true;show('next',true);$('next').focus();}else{failed=true;$('answer').setAttribute('aria-invalid','true');feedback('Noch nicht ganz. Deine Eingabe: „'+input+'“. Richtig ist: „'+q.answer+'“. '+q.rule+' Schreibe die richtige Form jetzt noch einmal ins Feld.','error');$('check').textContent='Korrektur prüfen';$('answer').focus();$('answer').select();}};
+$('hint').onclick=()=>{if(locked)return;helped=true;feedback(queue[pos].rule+' Lies danach den Satz noch einmal.');};
+function advance(){stopSpeech();if(++pos<queue.length)render();else finish();}
+$('next').onclick=advance;
+function finish(){show('work',false);show('result',true);$('resultTitle').textContent=roundLevel===0?'★ Runde geschafft!':'Runde abgeschlossen';$('resultText').textContent=mode==='screen'?`${queue.length} Aufgaben bearbeitet. ${first} davon beim ersten Versuch ohne Regelhilfe richtig. ${missed.length} Stellen kannst du noch festigen.`:`${queue.length} Sätze auf Papier bearbeitet. Deine Selbsteinschätzung: ${first} ohne Korrektur, ${missed.length} mit Korrektur. Das Tool bewertet dein Blatt nicht automatisch.`;$('review').replaceChildren();missed.forEach(q=>{const box=document.createElement('div');box.className='step';const strong=document.createElement('strong');strong.textContent=q.answer;const p=document.createElement('p');p.textContent=q.rule;box.append(strong,p);$('review').append(box);});show('retry',missed.length>0);$('resultTitle').focus();}
+$('retry').onclick=()=>begin(shuffled(missed));
+function loadVoices(){const previous=$('voice').value;voices=synth?synth.getVoices().filter(v=>v.localService===true&&/^de(?:[-_]|$)/i.test(v.lang)):[];$('voice').replaceChildren();voices.forEach(v=>$('voice').add(new Option(v.name+' · '+v.lang,v.voiceURI)));if(voices.some(v=>v.voiceURI===previous))$('voice').value=previous;if(!voices.length)$('voice').add(new Option('Keine lokale Stimme verfügbar',''));updateAudio();}
+function updateAudio(){const usable=voices.length>0;$('voice').disabled=!usable;$('whole').disabled=!usable;$('part').disabled=!usable;$('again').disabled=!usable||lastPart<0;$('stop').disabled=!usable;$('voiceInfo').textContent=usable?'Audio bleibt auf dem Gerät. Du bestimmst jede Schreibpause selbst.':'Keine lokale deutsche Stimme erkannt. Nutze die Vorlesevorlage als Partnerdiktat oder übe am Bildschirm.';$('part').textContent=queue[pos]?`▶ Teil ${partIndex+1} von ${queue[pos].parts.length}`:'▶ Teil 1';}
+function speak(text,label){stopSpeech();const voice=voices.find(v=>v.voiceURI===$('voice').value);if(!voice||!synth){loadVoices();return;}const token=speechToken;const u=new SpeechSynthesisUtterance(text);currentSpeech=u;u.voice=voice;u.lang=voice.lang;u.rate=+$('speed').value;u.onstart=()=>{if(token===speechToken)$('audioStatus').textContent=label+' wird vorgelesen.';};u.onend=()=>{if(token===speechToken){$('audioStatus').textContent=label+' beendet. Schreibe in Ruhe weiter.';currentSpeech=null;}};u.onerror=()=>{if(token===speechToken){$('audioStatus').textContent='Vorlesen nicht möglich. Versuche es erneut oder nutze die Vorlesevorlage.';currentSpeech=null;}};try{synth.speak(u);}catch{$('audioStatus').textContent='Vorlesen nicht möglich. Nutze die Vorlesevorlage.';}}
+$('whole').onclick=()=>speak(queue[pos].parts.join(' '),'Ganzer Satz');
+$('part').onclick=()=>{lastPart=partIndex;speak(queue[pos].parts[lastPart],`Teil ${lastPart+1}`);partIndex=(partIndex+1)%queue[pos].parts.length;updateAudio();};
+$('again').onclick=()=>{if(lastPart>=0)speak(queue[pos].parts[lastPart],`Teil ${lastPart+1}`);};
+$('stop').onclick=()=>{stopSpeech();$('audioStatus').textContent='Gestoppt. Du kannst jeden Satz oder Teil erneut hören.';};
+$('voice').onchange=stopSpeech;$('speed').onchange=stopSpeech;
+$('reveal').onclick=()=>{stopSpeech();show('solution',true);show('reveal',false);$('selfGood').focus();};
+$('selfGood').onclick=()=>{first++;advance();};$('selfPractice').onclick=()=>{missed.push(queue[pos]);advance();};
+if(synth)synth.addEventListener('voiceschanged',loadVoices);loadVoices();
+window.addEventListener('pagehide',stopSpeech);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSpeech();});
+</script>
+</body>
+</html>
