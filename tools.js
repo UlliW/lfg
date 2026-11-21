@@ -28,6 +28,13 @@ const tools = [
     url: "tools/weltwissen-trainer/index.html",
   },
   {
+    title: "Klima-Campus",
+    description: "Klimawandel · Lernmodule, Methodenwerkstatt",
+    audience: "Klassen 5-10",
+    subjects: "Entdeckerschule, fächerübergreifend, Deeper-Learning",
+    url: "tools/klima-campus/index.html",
+  },
+  {
     title: "GFS-Prompt-Generator",
     description: "Leitfrage entwickeln · Quellen recherchieren · GFS ausarbeiten",
     audience: "ab Klasse 7",
