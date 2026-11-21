@@ -16,7 +16,7 @@ const tools = [
   {
     title: "MINT-Logiktrainer",
     description: "Logik-Challenges aus allen MINT-Fächern",
-    audience: "Klassen 5-10",
+    audience: "Klasse 9",
     subjects: "Mathe, Bio, Chemie, Physik, Informatik, NIT",
     url: "tools/mint-logik-trainer/index.html",
   },
