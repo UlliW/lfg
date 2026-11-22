@@ -32,7 +32,7 @@ const tools = [
     description: "Teamübungen · drei Niveaus, Reflexion, Live-Abfrage.",
     audience: "Klassen 5-10",
     subjects: "Entdeckerschule, fächerübergreifend, Deeper Learning",
-    url: "tools/4k-trainer/index.html",
+    url: "tools/4k-training/index.html",
   },
   {
     title: "Klima-Campus",
