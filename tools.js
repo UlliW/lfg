@@ -28,6 +28,13 @@ const tools = [
     url: "tools/weltwissen-trainer/index.html",
   },
   {
+    title: "4K-Trainer",
+    description: "Teamübungen · drei Niveaus, Reflexion, Live-Abfrage.",
+    audience: "Klassen 5-10",
+    subjects: "Entdeckerschule, fächerübergreifend, Deeper Learning",
+    url: "tools/4k-trainer/index.html",
+  },
+  {
     title: "Klima-Campus",
     description: "Klimawandel · Lernmodule, Methodenwerkstatt",
     audience: "Klassen 9",
