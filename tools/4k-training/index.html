@@ -55,7 +55,7 @@
 </article>
 <div class="tools">
 <section class="card" id="timerbox" aria-labelledby="timerheading"><h2 id="timerheading" style="font-size:1.5rem">Timer</h2><label class="timer-input">Dauer (Min:Sek)<input id="timeinput" value="05:00" inputmode="text" maxlength="6" aria-describedby="timehint"></label><p id="timehint" class="small">00:01 bis 180:00. Neue Dauer mit „Zurücksetzen“ übernehmen.</p><div id="clock" class="clock" role="timer" aria-label="Verbleibende Zeit">05:00</div><div class="row"><button id="start" class="primary">Start</button><button id="reset">Zurücksetzen</button></div><p id="tstatus" class="status" role="status">Bereit.</p><p class="small">Bei gesperrtem Gerät erscheint das Ende beim Zurückkehren. Kein Tonsignal. Übungswechsel verändern den Timer nicht.</p></section>
-<section class="card survey" aria-labelledby="surveyheading"><h2 id="surveyheading" style="font-size:1.5rem">Klassen-Abfrage · 0–5</h2><label>Frage<input id="pollquestion" maxlength="160" value="Wie gut habt ihr zusammengearbeitet?"></label><p class="small">Skala gemeinsam klären: 0 = niedrigste, 5 = höchste Einschätzung. Trage pro Wert die Anzahl der Stimmen ein (0–99). Keine Namen. Dies ist eine lokale Auszählung, keine Online-Abstimmung.</p><figure id="figure"><figcaption id="caption"></figcaption><div id="chart" class="chart" aria-hidden="true"></div></figure><div id="counts" class="counts"></div><p id="pstatus" class="status" role="status" aria-live="polite"></p><div class="row"><button id="pollreset">Stimmen leeren</button><button id="undo" disabled>Rückgängig</button></div><p class="small">Die Stimmen bleiben beim Übungswechsel erhalten. Für eine neue Frage zuerst leeren. Nach dem Schließen der Seite gehen alle Eingaben verloren.</p></section>
+<section class="card survey" aria-labelledby="surveyheading"><h2 id="surveyheading" style="font-size:1.5rem">Klassen-Abfrage · 0–5</h2><label>Frage auswählen<select id="pollpreset" aria-describedby="pollscale"></select></label><label class="topgap">Frage – frei anpassbar<input id="pollquestion" maxlength="160" value="Wie gut habt ihr zusammengearbeitet?"></label><p id="pollscale" class="small"></p><p class="small">Skala vor der Abfrage gemeinsam klären. Trage pro Wert die Anzahl der Stimmen ein (0–99). Keine Namen. Dies ist eine lokale Auszählung, keine Online-Abstimmung.</p><figure id="figure"><figcaption id="caption"></figcaption><div id="chart" class="chart" aria-hidden="true"></div></figure><div id="counts" class="counts"></div><p id="pstatus" class="status" role="status" aria-live="polite"></p><div class="row"><button id="pollreset">Stimmen leeren</button><button id="undo" disabled>Rückgängig</button></div><p class="small">Die Stimmen bleiben beim Übungswechsel erhalten. Bei einer neuen oder geänderten Frage werden sie geleert; „Rückgängig“ stellt die vorherige Abfrage wieder her. Nach dem Schließen der Seite gehen alle Eingaben verloren.</p></section>
 </div>
 </div>
 </div>
@@ -153,13 +153,43 @@ $('reset').onclick=resetTimer;
 $('loadtime').onclick=()=>{if(running){timerMessage('Bitte den laufenden Timer zuerst pausieren, bevor du eine neue Dauer übernimmst.',true);$('start').focus();return;}$('timeinput').value=String(exercises[chosen].min).padStart(2,'0')+':00';resetTimer();timerMessage('Übungsdauer übernommen. Für einzelne Phasen kannst du sie kürzen.');};
 setInterval(tick,250);document.addEventListener('visibilitychange',tick);
 // Keine Speicherung: Alle Stimmen existieren nur während dieser geöffneten Seite.
-let previous=null;
+const pollPresets=[
+ ['Zusammenarbeit','Wie gut habt ihr zusammengearbeitet?','gar nicht gut','sehr gut'],
+ ['Wohlbefinden','Wie gut hat sich die Übung für dich angefühlt?','gar nicht gut','sehr gut'],
+ ['Eigene Beteiligung','Wie gut konntest du dich einbringen?','gar nicht gut','sehr gut'],
+ ['Zuhören','Wie aufmerksam habt ihr einander zugehört?','gar nicht aufmerksam','sehr aufmerksam'],
+ ['Verständlich erklären','Wie verständlich konntest du deine Gedanken erklären?','gar nicht verständlich','sehr verständlich'],
+ ['Gegenseitige Unterstützung','Wie gut habt ihr euch gegenseitig unterstützt?','gar nicht gut','sehr gut'],
+ ['Gemeinsam entscheiden','Wie gut habt ihr gemeinsame Entscheidungen getroffen?','gar nicht gut','sehr gut'],
+ ['Neue Ideen','Wie gut ist es euch gelungen, unterschiedliche Ideen zu entwickeln?','gar nicht gut','sehr gut'],
+ ['Ideen weiterentwickeln','Wie gut habt ihr die Ideen anderer weiterentwickelt?','gar nicht gut','sehr gut'],
+ ['Begründungen prüfen','Wie gründlich habt ihr eure Begründungen geprüft?','gar nicht gründlich','sehr gründlich'],
+ ['Mit Schwierigkeiten umgehen','Wie gut habt ihr bei Schwierigkeiten weitergearbeitet?','gar nicht gut','sehr gut'],
+ ['Lerngewinn','Wie viel hast du bei dieser Übung dazugelernt?','gar nichts','sehr viel']
+];
+let previous=null,activePreset='0',activeQuestion=$('pollquestion').value;
+pollPresets.forEach((p,i)=>{const o=el('option',p[0]);o.value=String(i);$('pollpreset').append(o);});
+const customOption=el('option','Eigene Frage');customOption.value='custom';$('pollpreset').append(customOption);$('pollpreset').value='0';
+function pollSnapshot(){return {question:activeQuestion,preset:activePreset,counts:Array.from({length:6},(_,i)=>$('count'+i).value)};}
+function clearCounts(){for(let i=0;i<6;i++)$('count'+i).value='0';}
+function pollScale(){const p=pollPresets[Number(activePreset)];$('pollscale').textContent=activePreset==='custom'?'0 = niedrigste Einschätzung · 5 = höchste Einschätzung. Legt passende Bedeutungen gemeinsam fest.':'0 = '+p[2]+' · 5 = '+p[3];}
+$('pollpreset').onchange=()=>{
+ const next=$('pollpreset').value;
+ if(next==='custom'){activePreset='custom';pollScale();$('pollquestion').focus();return;}
+ const question=pollPresets[Number(next)][1];
+ if(question!==activeQuestion){previous=pollSnapshot();clearCounts();$('undo').disabled=false;}
+ activePreset=next;activeQuestion=question;$('pollquestion').value=question;pollScale();updatePoll();
+};
 for(let i=0;i<6;i++){const label=el('label',String(i));const input=el('input');input.type='number';input.min='0';input.max='99';input.step='1';input.value='0';input.id='count'+i;input.inputMode='numeric';input.setAttribute('aria-label','Anzahl Stimmen für Wert '+i);input.oninput=()=>{previous=null;$('undo').disabled=true;updatePoll();};label.append(input);$('counts').append(label);}
 function updatePoll(){const counts=[];let valid=true;for(let i=0;i<6;i++){const inp=$('count'+i),s=inp.value.trim();const ok=/^\d{1,2}$/.test(s)&&Number(s)<=99;inp.setAttribute('aria-invalid',String(!ok));if(!ok)valid=false;counts.push(Number(s));}const q=$('pollquestion').value.trim();$('pollquestion').setAttribute('aria-invalid',String(!q));$('caption').textContent=q||'Abfrage';$('figure').hidden=!valid||!q;$('pstatus').className='status'+(!valid||!q?' error':'');if(!valid||!q){$('pstatus').textContent=!q?'Bitte eine Frage eingeben.':'Bitte für jeden Wert eine ganze Stimmenzahl von 0 bis 99 eingeben. Die Auswertung wartet auf gültige Angaben.';return;}$('chart').replaceChildren();const max=Math.max(1,...counts),total=counts.reduce((a,b)=>a+b,0);counts.forEach(n=>{const c=el('div',undefined,'column');c.append(el('span',String(n)));const b=el('div',undefined,'bar');b.style.height=(n/max*140)+'px';c.append(b);$('chart').append(c);});const sum=counts.reduce((a,n,i)=>a+n*i,0);$('pstatus').textContent=total?total+' Stimmen · Mittelwert '+(sum/total).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' von 5.':'Noch keine Stimmen. Trage die Anzahl pro Wert ein.';}
-$('pollquestion').oninput=updatePoll;
-$('pollreset').onclick=()=>{previous=Array.from({length:6},(_,i)=>$('count'+i).value);for(let i=0;i<6;i++)$('count'+i).value='0';$('undo').disabled=false;updatePoll();};
-$('undo').onclick=()=>{if(!previous)return;previous.forEach((n,i)=>$('count'+i).value=n);previous=null;$('undo').disabled=true;updatePoll();};
-filter();selectExercise(0);updatePoll();
+$('pollquestion').oninput=()=>{
+ const text=$('pollquestion').value;
+ if(text!==activeQuestion && Array.from({length:6},(_,i)=>$('count'+i).value).some(n=>n!=='0')){previous=pollSnapshot();clearCounts();$('undo').disabled=false;}
+ activeQuestion=text;activePreset='custom';$('pollpreset').value='custom';pollScale();updatePoll();
+};
+$('pollreset').onclick=()=>{previous=pollSnapshot();clearCounts();$('undo').disabled=false;updatePoll();};
+$('undo').onclick=()=>{if(!previous)return;previous.counts.forEach((n,i)=>$('count'+i).value=n);activeQuestion=previous.question;activePreset=previous.preset;$('pollquestion').value=activeQuestion;$('pollpreset').value=activePreset;previous=null;$('undo').disabled=true;pollScale();updatePoll();};
+filter();selectExercise(0);pollScale();updatePoll();
 </script>
 </body>
 </html>
