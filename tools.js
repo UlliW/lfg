@@ -49,6 +49,13 @@ const tools = [
     url: "tools/zugstabilitaet/index.html",
   },
   {
+    title: "LB Stabilität 1 - 3. Druckstabilität",
+    description: "Unterstützende Materialien · Lernbaustein Stabilität",
+    audience: "Klassen 8-9",
+    subjects: "NIT",
+    url: "tools/druckstabilitaet/index.html",
+  },
+  {
     title: "Klima-Campus",
     description: "Klimawandel · Lernmodule, Methodenwerkstatt",
     audience: "Klassen 9",
