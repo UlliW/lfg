@@ -77,6 +77,13 @@ const tools = [
     url: "tools/druckstabilitaet/index.html",
   },
   {
+    title: "LB Stabilität 1 - 4. Schubstabilität",
+    description: "Unterstützende Materialien · Lernbaustein Stabilität",
+    audience: "Klassen 8-9",
+    subjects: "NIT",
+    url: "tools/schubstabilitaet/index.html",
+  },
+  {
     title: "LB Stabilität 1 - 5. Biegestabilität",
     description: "Unterstützende Materialien · Lernbaustein Stabilität",
     audience: "Klassen 8-9",
