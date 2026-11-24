@@ -36,7 +36,7 @@ const tools = [
   },
   {
     title: "LB Stabilität 1 - 1. Belastungen & Verformungen",
-    description: "Unterstützende Materialien · Lernbaustein Stabilität · Belastungen erkennen",
+    description: "Unterstützende Materialien · Lernbaustein Stabilität",
     audience: "Klassen 8-9",
     subjects: "NIT",
     url: "tools/belastungen-erkennen/index.html",
