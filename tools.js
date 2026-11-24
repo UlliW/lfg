@@ -42,6 +42,13 @@ const tools = [
     url: "tools/belastungen-erkennen/index.html",
   },
   {
+    title: "LB Stabilität 1 - 2. Zugstabilität",
+    description: "Unterstützende Materialien · Lernbaustein Stabilität",
+    audience: "Klassen 8-9",
+    subjects: "NIT",
+    url: "tools/zugstabilitaet/index.html",
+  },
+  {
     title: "Klima-Campus",
     description: "Klimawandel · Lernmodule, Methodenwerkstatt",
     audience: "Klassen 9",
