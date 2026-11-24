@@ -35,6 +35,13 @@ const tools = [
     url: "tools/4k-training/index.html",
   },
   {
+    title: "LB Stabilität 1 - Belastungen",
+    description: "Unterstützende Materialien · Lernbaustein Stabilität · Belastungen erkennen",
+    audience: "Klassen 8-9",
+    subjects: "NIT",
+    url: "tools/belastungen-erkennen/index.html",
+  },
+  {
     title: "Klima-Campus",
     description: "Klimawandel · Lernmodule, Methodenwerkstatt",
     audience: "Klassen 9",
