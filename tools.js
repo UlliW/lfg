@@ -35,7 +35,7 @@ const tools = [
     url: "tools/4k-training/index.html",
   },
   {
-    title: "LB Stabilität 1 - Belastungen",
+    title: "LB Stabilität 1 - 1. Belastungen & Verformungen",
     description: "Unterstützende Materialien · Lernbaustein Stabilität · Belastungen erkennen",
     audience: "Klassen 8-9",
     subjects: "NIT",
